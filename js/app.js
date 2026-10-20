@@ -151,7 +151,7 @@
         <div class="upgrade-box p-4 border rounded bg-light shadow-sm">
           <h5 class="fw-bold">Enjoying the Trial?</h5>
           <p>Your trial ends on ${formatDate(access.trialEnd)}. Upgrade now for uninterrupted access.</p>
-          <button id="payBtn" class="btn btn-primary w-100">Upgrade to Premium — R6,999</button>
+          <button id="payBtn" class="btn btn-primary w-100">Upgrade to Premium — R799</button>
         </div>
       `;
     } else if (access.expired) {
