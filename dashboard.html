@@ -4,169 +4,169 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V1M5L4408K"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-V1M5L4408K');
-</script>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V1M5L4408K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-V1M5L4408K');
+  </script>
 
   <title>Sandile SystemsWorks – Dashboard</title>
   <link rel="stylesheet" href="css/styles.css" />
-<style>
-/* ================= MOST USED DECISION TOOLS ================= */
 
-.dashboard-tools {
-  margin: 2.5rem 0 3rem;
-}
+  <style>
+  /* ================= MOST USED DECISION TOOLS ================= */
 
-.dashboard-tools h2 {
-  font-size: 1.1rem;
-  font-weight: 800;
-  margin: 0 0 1rem;
-  letter-spacing: -0.01em;
-  color: var(--text-main);
-}
-
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.tool-card {
-  display: block;
-  padding: 1rem 1.1rem;
-  border-radius: 14px;
-  text-decoration: none;
-  color: inherit;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-soft);
-  transition:
-    transform 0.18s ease,
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    background 0.18s ease;
-}
-
-.tool-card:hover {
-  transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(0, 180, 216, 0.4);
-  box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(0, 180, 216, 0.12);
-}
-
-.tool-card h4 {
-  margin: 0 0 0.35rem;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.tool-card p {
-  margin: 0;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
-
-@media (max-width: 768px) {
   .dashboard-tools {
-    margin: 2rem 0;
+    margin: 2.5rem 0 3rem;
+  }
+
+  .dashboard-tools h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+    color: var(--text-main);
   }
 
   .tools-grid {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
   }
-}
-</style>
+
+  .tool-card {
+    display: block;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-soft);
+    transition:
+      transform 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      background 0.18s ease;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 180, 216, 0.4);
+    box-shadow:
+      0 10px 28px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(0, 180, 216, 0.12);
+  }
+
+  .tool-card h4 {
+    margin: 0 0 0.35rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .tool-card p {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-tools {
+      margin: 2rem 0;
+    }
+
+    .tools-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  </style>
 </head>
 
 <body>
 <div class="app-shell">
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  
-  <!-- TOP -->
-  <div class="sidebar-top">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    
+    <!-- TOP -->
+    <div class="sidebar-top">
 
-    <!-- BRAND -->
-    <div class="sidebar-brand">
-      <img src="images/Untitled design.png" alt="Sandile SystemsWorks" class="sidebar-logo" />
-      <span class="sidebar-name">Sandile SystemsWorks</span>
-    </div>
-
-    <!-- NAV -->
-    <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-link active">
-        <i data-lucide="layout-grid"></i>
-        <span>Dashboard</span>
-      </a>
-
-      <a href="sector-primary.html" class="nav-link">
-        <i data-lucide="leaf"></i>
-        <span>Primary Sector</span>
-      </a>
-
-      <a href="sector-secondary.html" class="nav-link">
-        <i data-lucide="factory"></i>
-        <span>Secondary Sector</span>
-      </a>
-
-      <a href="sector-tertiary.html" class="nav-link">
-        <i data-lucide="briefcase"></i>
-        <span>Tertiary Sector</span>
-      </a>
-
-      <a href="sector-quaternary.html" class="nav-link">
-        <i data-lucide="cpu"></i>
-        <span>Quaternary Sector</span>
-      </a>
-
-      <a href="sector-quinary.html" class="nav-link">
-        <i data-lucide="users"></i>
-        <span>Quinary Sector</span>
-      </a>
-    </nav>
-
-  </div>
-
-  <!-- BOTTOM / ACCOUNT -->
-  <div class="sidebar-bottom">
-    <div class="sidebar-account">
-
-      <button id="accountBtn" class="account-btn">
-        <span id="accountAvatar" class="account-avatar">U</span>
-
-        <div class="account-info">
-          <span id="accountName" class="account-name">Account</span>
-          <i data-lucide="chevron-up" class="chevron"></i>
-        </div>
-      </button>
-
-      <div id="accountMenu" class="account-menu">
-        <a href="index.html">
-          <i data-lucide="home"></i>
-          Home
-        </a>
-
-        <button id="logoutBtn">
-          <i data-lucide="log-out"></i>
-          Logout
-        </button>
+      <!-- BRAND -->
+      <div class="sidebar-brand">
+        <img src="images/Untitled design.png" alt="Sandile SystemsWorks" class="sidebar-logo" />
+        <span class="sidebar-name">Sandile SystemsWorks</span>
       </div>
 
-    </div>
-  </div>
+      <!-- NAV -->
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-link active">
+          <i data-lucide="layout-grid"></i>
+          <span>Dashboard</span>
+        </a>
 
-</aside>
+        <a href="sector-primary.html" class="nav-link">
+          <i data-lucide="leaf"></i>
+          <span>Primary Sector</span>
+        </a>
+
+        <a href="sector-secondary.html" class="nav-link">
+          <i data-lucide="factory"></i>
+          <span>Secondary Sector</span>
+        </a>
+
+        <a href="sector-tertiary.html" class="nav-link">
+          <i data-lucide="briefcase"></i>
+          <span>Tertiary Sector</span>
+        </a>
+
+        <a href="sector-quaternary.html" class="nav-link">
+          <i data-lucide="cpu"></i>
+          <span>Quaternary Sector</span>
+        </a>
+
+        <a href="sector-quinary.html" class="nav-link">
+          <i data-lucide="users"></i>
+          <span>Quinary Sector</span>
+        </a>
+      </nav>
+
+    </div>
+
+    <!-- BOTTOM / ACCOUNT -->
+    <div class="sidebar-bottom">
+      <div class="sidebar-account">
+
+        <button id="accountBtn" class="account-btn">
+          <span id="accountAvatar" class="account-avatar">U</span>
+
+          <div class="account-info">
+            <span id="accountName" class="account-name">Account</span>
+            <i data-lucide="chevron-up" class="chevron"></i>
+          </div>
+        </button>
+
+        <div id="accountMenu" class="account-menu">
+          <a href="index.html">
+            <i data-lucide="home"></i>
+            Home
+          </a>
+
+          <button id="logoutBtn">
+            <i data-lucide="log-out"></i>
+            Logout
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </aside>
 
   <!-- MAIN CONTENT -->
   <main class="main-content">
@@ -176,136 +176,46 @@ gtag('config', 'G-V1M5L4408K');
       <span></span><span></span><span></span>
     </button>
 
-<header class="page-header">
-  <h1>Business Decision Tools</h1>
-  <p>Welcome, <span id="usernameDisplay">User</span>. Use industry decision tools to analyze profit, cost structure, margins and risk before making business decisions.</p>
-</header>
+    <header class="page-header">
+      <h1>Business Decision Tools</h1>
+      <p>Welcome, <span id="usernameDisplay">User</span>. Use industry decision tools to analyze profit, cost structure, margins and risk before making business decisions.</p>
+    </header>
 
-<!-- DASHBOARD STATUS: These IDs connect directly to your app.js render functions -->
-<section class="dashboard-stats">
-  <div class="stat-card">
-    <div class="stat-label">Access Status</div>
-    <div class="stat-value" id="statAccess">Checking...</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-label">Subscription Details</div>
-    <div class="stat-value" id="statBilling">—</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-label">Session Active Since</div>
-    <div class="stat-value" id="statLogin">—</div>
-  </div>
-</section>
-
-<!-- PAY / UPGRADE BOX: 
-     Now acts as a dynamic container. 
-     app.js will fill this with either "Upgrade" or "Renew" logic. -->
-<section id="payBox" class="pay-container" style="display: none;">
-    <!-- JavaScript will inject the Upgrade UI here only if needed -->
-</section>
-
-<!-- MOST USED DECISION TOOLS -->
-<section class="dashboard-tools">
-
-<h2>Popular Decision Tools</h2>
-
-<div class="tools-grid">
-
-  <a href="industry-construction.html" class="tool-card">
-<h4>Construction Project Profitability</h4>
-<p>Evaluate contract profit, ROI and project risk before starting.</p>
-</a>
-
-<!--
-<a href="industry-consulting.html" class="tool-card">
-  <h4>Consulting Profit & Risk Simulator</h4>
-  <p>Simulate consulting project revenue, costs, discounts, and risk to see if a project is profitable before committing.</p>
-</a>
-
-<a href="industry-real-estate.html" class="tool-card">
-<h4>Real Estate Development Profitability</h4>
-<p>Evaluate project profitability, ROI and development risk.</p>
-</a>
-
-<a href="industry-manufacturing.html" class="tool-card">
-<h4>Manufacturing Profitability</h4>
-<p>Analyze unit economics, margins and production profitability.</p>
-</a>
-
-
-<a href="industry-logistics.html" class="tool-card">
-<h4>Logistics Profit & Risk Analysis</h4>
-<p>Evaluate monthly logistics performance, simulate shipment profitability, and analyze import/export cost exposure before accepting contracts.</p>
-</a>
-
-<a href="industry-restaurants.html" class="tool-card">
-<h4>Restaurant Profit Analyzer</h4>
-<p>Understand revenue, costs and break-even performance.</p>
-</a>
-
-
-
-</div>
-
-
-    <div class="industry-search">
-      <input id="industrySearch" type="search" placeholder="Search industries…" />
-      <div class="industry-meta">
-        <span id="industryCount">0/0 showing</span>
-      </div>
-    </div>
-
-
-    <section class="cards-grid">
-      <div class="card">
-        <h3 class="card-title">Primary Sector</h3>
-        <p>
-          Agriculture, Forestry, Fishing, Mining, Oil & Gas, Renewable Energy
-        </p>
-        <a href="sector-primary.html">Explore</a>
+    <!-- DASHBOARD STATUS -->
+    <section class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-label">Access Status</div>
+        <div class="stat-value" id="statAccess">Checking...</div>
       </div>
 
-     
-      <div class="card">
-        <h3 class="card-title">Secondary Sector</h3>
-        <p>
-          Manufacturing, Construction, Automotive, Electronics, Textiles, Food & Beverage
-        </p>
-        <a href="sector-secondary.html">Explore</a>
+      <div class="stat-card">
+        <div class="stat-label">Subscription Details</div>
+        <div class="stat-value" id="statBilling">—</div>
       </div>
 
-     
-      <div class="card">
-        <h3 class="card-title">Tertiary Sector</h3>
-        <p>
-          Real Estate, Retail, Restaurants, Hospitality, Logistics,
-          Healthcare, Education, Finance, Marketing, Consulting
-        </p>
-        <a href="sector-tertiary.html">Explore</a>
+      <div class="stat-card">
+        <div class="stat-label">Session Active Since</div>
+        <div class="stat-value" id="statLogin">—</div>
       </div>
-
-   
-      <div class="card">
-        <h3 class="card-title">Quaternary Sector</h3>
-        <p>
-          Software, SaaS, IT Services, Media, R&D, Telecommunications
-        </p>
-        <a href="sector-quaternary.html">Explore</a>
-      </div>
-
-      <div class="card">
-        <h3 class="card-title">Quinary Sector</h3>
-        <p>
-          Government, NGOs, Social & Community Services, Public Administration
-        </p>
-        <a href="sector-quinary.html">Explore</a>
-      </div>
-
     </section>
-    -->
-    
+
+    <!-- PAY / UPGRADE BOX -->
+    <section id="payBox" class="pay-container" style="display: none;">
+      <!-- JavaScript will inject the Upgrade UI here only if needed -->
+    </section>
+
+    <!-- MOST USED DECISION TOOLS -->
+    <section class="dashboard-tools">
+      <h2>Popular Decision Tools</h2>
+
+      <div class="tools-grid">
+        <a href="industry-construction.html" class="tool-card">
+          <h4>Construction Project Profitability</h4>
+          <p>Evaluate contract profit, ROI and project risk before starting.</p>
+        </a>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -316,4 +226,5 @@ gtag('config', 'G-V1M5L4408K');
 <script src="js/app.js"></script>
 <script src="js/hamburger.js"></script>
 
+</body>
 </html>
