@@ -159,7 +159,7 @@
         <div class="upgrade-box p-4 border border-danger rounded bg-white shadow-sm">
           <h5 class="fw-bold text-danger">Access Expired</h5>
           <p>Your subscription has ended. Renew now to access your calculators and data.</p>
-          <button id="payBtn" class="btn btn-primary w-100">Renew Access — R6,999</button>
+          <button id="payBtn" class="btn btn-primary w-100">Renew Access — R799</button>
         </div>
       `;
     }
