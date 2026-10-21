@@ -143,8 +143,7 @@
       "dailyCovers","revenue","foodCost","totalCosts","ratio",
       "profit","margin","profitCover","monthly","annual","breakeven"
     ].forEach(id => {
-      if ($(id)) {
-        $(id).textContent = "—";
+      if ($(id)) {$(id).textContent = "—";
         $(id).className = "output-value";
       }
     });
@@ -189,7 +188,6 @@
 
     // 1. Construct the payload to match the backend SharedDealSchema
     const payload = {
-      // Generate a random unique ID for the shareId field
       shareId: "share_" + Math.random().toString(36).substring(2, 9),
       type: "restaurant",
       inputs: getInputs(),
@@ -234,9 +232,8 @@
       // 2. Identify the final ID from the server response
       const finalId = data.shareId || data.id || data._id;
 
-      // 3. Build the URL including the specific repository path for GitHub Pages
-      const repoPath = "/Sandile-SystemsWorks-SaaS-Frontend";
-      const shareUrl = `${window.location.origin}${repoPath}/share.html?id=${finalId}`;
+      // 3. Build the clean root URL for Vercel
+      const shareUrl = `${window.location.origin}/share.html?id=${finalId}`;
 
       const shareMessage =
         `🍽️ Restaurant Operations Analysis: ${projectName}\n` +
@@ -279,6 +276,7 @@
     a.download = "restaurant-report.csv";
     a.click();
   }
+
   /* ================= EXPORT REPORT (PRINT) ================= */
   function exportReport() {
     if (!latestData) return alert("Run calculation first");
@@ -291,14 +289,12 @@
       day: 'numeric'
     });
 
-    if ($("#print-project-name")) $("#print-project-name").textContent = projectName;
-    if ($("#print-date")) $("#print-date").textContent = dateStr;
+    if ($("print-project-name")) $("print-project-name").textContent = projectName;
+    if ($("print-date")) $("print-date").textContent = dateStr;
 
     // 2. Trigger the Print Dialog
     window.print();
   }
-
-
 
   /* ================= INIT ================= */
   document.addEventListener("DOMContentLoaded", () => {
