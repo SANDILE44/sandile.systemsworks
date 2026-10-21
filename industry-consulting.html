@@ -64,28 +64,47 @@ CONSULTING DECISION UI
 <div class="app-shell">
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">
+          <img src="images/Untitled design.png" class="sidebar-logo" />
+          <span class="sidebar-name">Sandile SystemsWorks</span>
+        </div>
 
-<div class="sidebar-top">
+        <nav class="sidebar-nav">
+          <a href="dashboard.html" class="nav-link">
+            <i data-lucide="layout-grid"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="industry-consulting.html" class="nav-link active">
+            <i data-lucide="hard-hat"></i>
+            <span>Construction Tool</span>
+          </a>
+          <hr class="sidebar-divider" />
+          <a href="SaveConsulting.html" class="nav-link">
+            <i data-lucide="bookmark"></i>
+            <span>Saved Deals</span>
+          </a>
+        </nav>
+      </div>
 
-<div class="sidebar-brand">
-<img src="images/Untitled design.png" class="sidebar-logo" />
-<span class="sidebar-name">Sandile SystemsWorks</span>
-</div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-account">
+          <button id="accountBtn" class="account-btn">
+            <span id="accountAvatar" class="account-avatar">U</span>
+            <div class="account-info">
+              <span id="accountName" class="account-name">Account</span>
+              <i data-lucide="chevron-up" class="chevron"></i>
+            </div>
+          </button>
 
-<nav class="sidebar-nav">
-<a href="dashboard.html">Dashboard</a>
-<a href="sector-tertiary.html" class="active">Consulting Tool</a>
-
-<hr class="sidebar-divider" />
-
-<a href="SaveConsulting.html">Saved Deals</a>
-<a href="#">History</a>
-<a href="#">Export Results</a>
-</nav>
-</div>
-
-</aside>
+          <div id="accountMenu" class="account-menu">
+            <a href="index.html"><i data-lucide="home"></i> Home</a>
+            <button id="logoutBtn"><i data-lucide="log-out"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </aside>
 
 <!-- MAIN -->
 <main class="main-content">
@@ -314,6 +333,8 @@ CONSULTING DECISION UI
 <script src="js/consulting.js"></script>
 <script src="js/hamburger.js"></script>
 <script src="js/user-display.js"></script>
+
+
 
 </body>
 </html>

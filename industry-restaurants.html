@@ -64,44 +64,48 @@ RESTAURANT DECISION ENGINE UI
 <div class="app-shell">
 
 <!-- SIDEBAR -->
-<aside class="sidebar">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">
+          <img src="images/Untitled design.png" class="sidebar-logo" />
+          <span class="sidebar-name">Sandile SystemsWorks</span>
+        </div>
 
-  <div class="sidebar-top">
+        <nav class="sidebar-nav">
+          <a href="dashboard.html" class="nav-link">
+            <i data-lucide="layout-grid"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="industry-restaurants.html" class="nav-link active">
+            <i data-lucide="hard-hat"></i>
+            <span>Construction Tool</span>
+          </a>
+          <hr class="sidebar-divider" />
+          <a href="SaveRestaurant.html" class="nav-link">
+            <i data-lucide="bookmark"></i>
+            <span>Saved Deals</span>
+          </a>
+        </nav>
+      </div>
 
-    <!-- BRAND -->
-    <div class="sidebar-brand">
-      <img src="images/Untitled design.png" class="sidebar-logo" />
-      <span class="sidebar-name">Sandile SystemsWorks</span>
-    </div>
+      <div class="sidebar-bottom">
+        <div class="sidebar-account">
+          <button id="accountBtn" class="account-btn">
+            <span id="accountAvatar" class="account-avatar">U</span>
+            <div class="account-info">
+              <span id="accountName" class="account-name">Account</span>
+              <i data-lucide="chevron-up" class="chevron"></i>
+            </div>
+          </button>
 
-    <!-- MAIN NAV -->
-    <nav class="sidebar-nav">
+          <div id="accountMenu" class="account-menu">
+            <a href="index.html"><i data-lucide="home"></i> Home</a>
+            <button id="logoutBtn"><i data-lucide="log-out"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-      <a href="dashboard.html">Dashboard</a>
-
-      <a href="restaurant-tool.html" class="active">
-        Restaurant Tool
-      </a>
-
-      <hr class="sidebar-divider" />
-
-      <!-- VALUE FEATURES -->
-      <a href="SaveRestaurant.html" id="savedDealsBtn">
-        Saved Deals
-      </a>
-
-      <a href="#" id="historyBtn">
-        History
-      </a>
-
-      <a href="#" id="exportBtn">
-        Export Results
-      </a>
-
-    </nav>
-  </div>
-
-</aside>
 
 <!-- MAIN -->
 <main class="main-content">
@@ -292,6 +296,7 @@ RESTAURANT DECISION ENGINE UI
 
 </div>
 
+
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/guard.js"></script>
@@ -299,6 +304,7 @@ RESTAURANT DECISION ENGINE UI
 <script src="js/restaurants.js"></script>
 <script src="js/hamburger.js"></script>
 <script src="js/user-display.js"></script>
+
 
 </body>
 </html>
