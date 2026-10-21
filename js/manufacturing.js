@@ -168,7 +168,6 @@
 
     // 1. Construct the payload to match the backend SharedDealSchema
     const payload = {
-      // Generate a random unique ID for the shareId field
       shareId: "share_" + Math.random().toString(36).substring(2, 9),
       type: "manufacturing",
       inputs: getInputs(),
@@ -214,9 +213,8 @@
       // 2. Identify the final ID from the server response
       const finalId = data.shareId || data.id || data._id;
 
-      // 3. Build the URL including the specific repository path for GitHub Pages
-      const repoPath = "/Sandile-SystemsWorks-SaaS-Frontend";
-      const shareUrl = `${window.location.origin}${repoPath}/share.html?id=${finalId}`;
+      // 3. Build the clean root URL for Vercel
+      const shareUrl = `${window.location.origin}/share.html?id=${finalId}`;
 
       const shareMessage =
         `⚙️ Manufacturing Profitability Analysis: ${projectName}\n` +
