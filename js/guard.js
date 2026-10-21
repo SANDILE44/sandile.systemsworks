@@ -1,5 +1,6 @@
 (async function guardCalculators() {
-  const token = localStorage.getItem("token");
+  // 1. Check for token with fallback key names
+  const token = localStorage.getItem("token") || localStorage.getItem("ssw_token");
   let redirected = false;
 
   function go(url, message) {
@@ -11,93 +12,56 @@
   }
 
   /* =====================================
-     NOT LOGGED IN: UI OVERLAY
+     1. NOT LOGGED IN: IMMEDIATE REDIRECT
   ===================================== */
   if (!token) {
-    document.body.innerHTML = `
-      <div style="
-        min-height:100vh;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        background:#020617;
-        color:white;
-        font-family: 'Inter', sans-serif;
-        text-align:center;
-        padding:20px;
-        animation: fadeIn 0.4s ease-in;
-      ">
-        <style>@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }</style>
-        <div style="
-          max-width:420px;
-          background:#0f172a;
-          padding:40px 30px;
-          border-radius:16px;
-          border: 1px solid rgba(255,255,255,0.1);
-          box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);
-        ">
-          <h2 style="margin-bottom:12px; font-size: 24px;">Access Restricted</h2>
-          <p style="opacity:0.7; margin-bottom:28px; line-height:1.6;">
-            Please log in to Sandile SystemsWorks to access your decision engine and saved deals.
-          </p>
-          <button id="goLogin" style="
-            background:#2563eb;
-            color:white;
-            border:none;
-            padding:14px 24px;
-            border-radius:10px;
-            font-size:16px;
-            font-weight:600;
-            cursor:pointer;
-            width:100%;
-            transition: background 0.2s;
-          ">
-            Log in to continue
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.getElementById("goLogin").onclick = () => go("login.html", "Please log in.");
+    console.warn("SystemsWorks Guard: No auth token found. Redirecting...");
+    go("login.html", "Please log in to access your decision engine.");
     return;
   }
 
   /* =====================================
-     SAFETY CHECK
+     2. SAFETY CHECK: API BASE CONFIG
   ===================================== */
-  if (!window.API_BASE) {
-    console.error("SystemsWorks: API_BASE not defined in config.");
+  const apiBase = window.API_BASE || (window.CONFIG && window.CONFIG.API_BASE);
+  if (!apiBase) {
+    console.warn("SystemsWorks Guard: API_BASE not defined yet. Allowing offline mode...");
     return;
   }
 
   /* =====================================
-     ACCESS & SUBSCRIPTION CHECK
+     3. ACCESS & SUBSCRIPTION CHECK
   ===================================== */
   try {
-    const res = await fetch(`${window.API_BASE}/api/calculators/access`, {
+    const res = await fetch(`${apiBase}/api/calculators/access`, {
       method: "GET",
-      headers: { "Authorization": `Bearer ${token}` }
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
     });
 
     if (res.status === 401) {
       localStorage.removeItem("token");
-      go("login.html", "Your session has expired.");
+      localStorage.removeItem("ssw_token");
+      go("login.html", "Your session has expired. Please log in again.");
       return;
     }
 
     if (res.status === 403) {
-      // 7-day trial expired logic
-      go("payment.html", "Your 7-day trial has ended. Upgrade to keep accessing your saved data.");
+      // 7-day trial or subscription check
+      go("payment.html", "Your 7-day trial has ended. Upgrade to keep accessing saved tools.");
       return;
     }
 
-    if (!res.ok) throw new Error("Server response error");
+    if (!res.ok) {
+      throw new Error(`Server returned status ${res.status}`);
+    }
 
-    console.log("Access verified: Welcome back.");
+    console.log("SystemsWorks Guard: Access verified.");
 
   } catch (err) {
-    console.error("Guard Error:", err);
-    // If the server is down, we usually let them stay on the page 
-    // rather than locking them out, but that's up to you.
+    console.error("Guard Warning (Backend unreachable or network error):", err);
+    // Fallback: Allow user to stay on page if server is temporarily unreachable
   }
 })();
