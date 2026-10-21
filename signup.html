@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>  
     
     <!-- GOOGLE IDENTITY SERVICES ENGINE -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>  
     
     <style>  
         /* ── SYSTEM DESIGN SYSTEM VARIABLES ── */
@@ -238,12 +238,13 @@
     <nav class="fixed w-full z-50 top-0 glass border-b border-white/5">  
         <div class="max-w-7xl mx-auto px-6 lg:px-8">  
             <div class="flex items-center justify-between h-20">  
-                <div class="flex items-center gap-3">  
+                <!-- CLICKABLE LOGO TO HOMEPAGE -->
+                <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition">  
                     <img src="images/Untitled design.png" alt="Logo" class="h-8 w-auto">  
                     <span class="text-lg font-bold tracking-tighter text-white uppercase italic">  
                         Sandile <span class="text-[#00b4d8]">SystemsWorks</span>  
                     </span>  
-                </div>  
+                </a>  
                 <div>  
                     <a href="login.html" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition">
                         Sign in
@@ -257,12 +258,13 @@
     <main class="auth-wrapper">  
         <div class="auth-card">  
             <div class="text-center mb-8">  
-                <img src="images/Untitled design.png" alt="Logo" class="h-10 w-auto mx-auto mb-4">  
+                <!-- CLICKABLE CARD LOGO TO HOMEPAGE -->
+                <a href="index.html" class="inline-block mb-4 hover:opacity-80 transition">
+                    <img src="images/Untitled design.png" alt="Logo" class="h-10 w-auto mx-auto">  
+                </a>
                 <h1 class="text-2xl font-extrabold text-white tracking-tight uppercase italic mb-1">Create your account</h1>  
                 <p class="text-xs text-slate-400 font-light">Start your <strong class="text-[#00b4d8] font-semibold">7 day free trial</strong> and make smarter decisions.</p>  
             </div>
-
-      
 
             <!-- ── GOOGLE AUTH PLATFORM MOUNT ELEMENT ── -->
             <div class="flex justify-center w-full">
@@ -284,14 +286,13 @@
                 </div>
             </div>
 
-                        <!-- ── SYSTEMSWORKS ORBITAL BREAK LINE ── -->
+            <!-- ── ORBITAL BREAK LINE ── -->
             <div class="relative flex py-5 items-center">
                 <div class="flex-grow border-t border-white/5"></div>
                 <span class="flex-shrink mx-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">OR</span>
                 <div class="flex-grow border-t border-white/5"></div>
             </div>
 
-            
             <form id="signupForm">  
                 <div class="form-group">  
                     <label for="name">Full name</label>  
@@ -308,8 +309,6 @@
                 <button type="submit" class="auth-submit">Create account</button>  
                 <p id="msg"></p>  
             </form>  
-
-
 
             <div class="text-center mt-6 text-xs text-slate-500">  
                 Already have an account? <a href="login.html" class="text-[#00b4d8] hover:underline">Sign in</a>  
@@ -333,7 +332,7 @@
             msg.style.display = text ? 'block' : 'none';  
         }  
           
-        /* ── DYNAMIC SYSTEM OVERLAY GEN GENERATOR ── */  
+        /* ── DYNAMIC SYSTEM OVERLAY GENERATOR ── */  
         function showOverlay() {  
             const overlay = document.createElement('div');  
             overlay.id = 'g-overlay';  
@@ -373,11 +372,9 @@
             wrap.appendChild(logo);  
             wrap.appendChild(checkWrap);  
             overlay.appendChild(glow);  
-            wrap.appendChild(checkWrap);  
             overlay.appendChild(wrap);  
             document.body.appendChild(overlay);  
               
-            // Force a DOM reflow to enable CSS transition state smoothly
             let stats = overlay.offsetHeight;
             overlay.style.opacity = '1';  
               
@@ -416,8 +413,8 @@
               
             showMsg('');  
               
-            if (!name)               return showMsg('Enter your name', 'error');  
-            if (!email)              return showMsg('Enter your email', 'error');  
+            if (!name)             return showMsg('Enter your name', 'error');  
+            if (!email)            return showMsg('Enter your email', 'error');  
             if (password.length < 8) return showMsg('Password must be at least 8 characters', 'error');  
               
             btn.disabled = true;  
@@ -429,7 +426,11 @@
               
                 if (!data?.token) throw new Error('Signup failed');  
               
-                window.auth.setToken(data.token);  
+                if (window.auth && typeof window.auth.setToken === 'function') {
+                    window.auth.setToken(data.token);
+                } else {
+                    localStorage.setItem('token', data.token);
+                }
               
                 triggerSuccess(elements);  
               
@@ -450,34 +451,29 @@
             const submitBtn = signupForm.querySelector('button');
             submitBtn.disabled = true;
             
-            // Trigger your custom loading overlay interface
             const uiElements = showOverlay();
             
             try {
-                // Point this fetch destination string directly to your Render live API endpoint.
-                // Replace 'https://your-backend-server.onrender.com' with your actual Render service link.
-                const backendRes = await fetch('https://sandile-systemsworks-saas-backend-2.onrender.com/api/auth/google', {
+                const apiBase = (window.CONFIG && window.CONFIG.API_BASE) || window.API_BASE || 'https://sandile-systemsworks-saas-backend-2.onrender.com';
+                
+                const backendRes = await fetch(`${apiBase}/api/auth/google`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token: response.credential })
                 });
                 
                 const data = await backendRes.json();
                 
-                if (!backendRes.ok || data.error) {
-                    throw new Error(data.error || 'Google authentication handshake rejected.');
+                if (!backendRes.ok || data.error || !data.token) {
+                    throw new Error(data.error || data.message || 'Google authentication handshake rejected.');
                 }
                 
-                // Store token using your internal session layout utilities
                 if (window.auth && typeof window.auth.setToken === 'function') {
                     window.auth.setToken(data.token);
                 } else {
-                    localStorage.setItem('auth_token', data.token);
+                    localStorage.setItem('token', data.token);
                 }
                 
-                // Fire the animated success checkmark
                 triggerSuccess(uiElements);
                 
                 setTimeout(() => {  
