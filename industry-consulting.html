@@ -64,10 +64,10 @@ CONSULTING DECISION UI
 <div class="app-shell">
 
 <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="app-sidebar">
       <div class="sidebar-top">
         <div class="sidebar-brand">
-          <img src="images/Untitled design.png" class="sidebar-logo" />
+          <img src="images/Untitled design.png" alt="Sandile SystemsWorks" class="sidebar-logo" />
           <span class="sidebar-name">Sandile SystemsWorks</span>
         </div>
 
@@ -77,8 +77,8 @@ CONSULTING DECISION UI
             <span>Dashboard</span>
           </a>
           <a href="industry-consulting.html" class="nav-link active">
-            <i data-lucide="hard-hat"></i>
-            <span>Construction Tool</span>
+            <i data-lucide="briefcase-business"></i>
+            <span>Consulting Tool</span>
           </a>
           <hr class="sidebar-divider" />
           <a href="SaveConsulting.html" class="nav-link">
@@ -108,6 +108,10 @@ CONSULTING DECISION UI
 
 <!-- MAIN -->
 <main class="main-content">
+
+<button id="hamburger" class="hamburger" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false">
+  <span></span><span></span><span></span>
+</button>
 
 <!-- PRINT-ONLY HEADER -->
 <div id="print-header" class="print-only">
@@ -206,7 +210,10 @@ CONSULTING DECISION UI
   </div>
 </details>
 
-<button id="resetBtn">Reset</button>
+<button id="resetBtn" class="reset-btn">
+  <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+  <span>Reset All</span>
+</button>
 
 </div>
 <!-- OUTPUTS -->
@@ -325,7 +332,6 @@ CONSULTING DECISION UI
 
 </div>
 
-
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/guard.js"></script>
@@ -333,6 +339,9 @@ CONSULTING DECISION UI
 <script src="js/consulting.js"></script>
 <script src="js/hamburger.js"></script>
 <script src="js/user-display.js"></script>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>lucide.createIcons();</script>
 
 
 
