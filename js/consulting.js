@@ -171,7 +171,7 @@
     window.print();
   }
 
- /* ================= SHARE DEAL (VERCEL ROOT) ================= */
+/* ================= SHARE DEAL (VERCEL ROOT) ================= */
   async function shareDeal() {
     if (!latestData) return alert("Run calculator first");
 
@@ -248,7 +248,7 @@
       alert("Action failed. Please check the console for details.");
     }
   }
-  
+
   /* ================= SAVE / UPDATE ================= */
   async function saveDeal() {
     if (!latestData) return alert("Run calculator first");
