@@ -2,102 +2,86 @@
 <html lang="en">
 
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>Saved Manufacturing Deals - Sandile SystemsWorks</title>
-
-<link rel="stylesheet" href="css/styles.css" />
-
-<style>
-.saved-wrapper {
-  margin-left: 260px;
-  padding: 2rem;
-  color: #e5e7eb;
-}
-
-h1 {
-  margin-bottom: 1rem;
-}
-
-.deals-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-}
-
-.deal-card {
-  background: #0b1220;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 1rem;
-}
-
-.deal-title {
-  font-weight: 800;
-  color: #00b4d8;
-  margin-bottom: 0.6rem;
-  font-size: 0.9rem;
-}
-
-.deal-body {
-  font-size: 0.85rem;
-  line-height: 1.6;
-  opacity: 0.9;
-}
-
-.deal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 1rem;
-}
-
-.edit-btn {
-  flex: 1;
-  padding: 0.6rem;
-  border-radius: 10px;
-  border: 1px solid rgba(0,180,216,0.4);
-  background: rgba(0,180,216,0.1);
-  color: #00b4d8;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.delete-btn {
-  flex: 1;
-  padding: 0.6rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255,0,0,0.3);
-  background: rgba(255,0,0,0.1);
-  color: #ff6b6b;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.empty {
-  padding: 2rem;
-  text-align: center;
-  opacity: 0.6;
-}
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saved Manufacturing Deals - Sandile SystemsWorks</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">
+          <img src="images/Untitled design.png" class="sidebar-logo" alt="Sandile SystemsWorks" />
+          <span class="sidebar-name">Sandile SystemsWorks</span>
+        </div>
 
-<div class="saved-wrapper">
+        <nav class="sidebar-nav">
+          <a href="dashboard.html" class="nav-link">
+            <i data-lucide="layout-grid"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="industry-manufacturing.html" class="nav-link">
+            <i data-lucide="factory"></i>
+            <span>Manufacturing Tool</span>
+          </a>
+          <hr class="sidebar-divider" />
+          <a href="SaveManufacturing.html" class="nav-link active" aria-current="page">
+            <i data-lucide="bookmark"></i>
+            <span>Saved Deals</span>
+          </a>
+        </nav>
+      </div>
 
-  <h1>Saved Manufacturing Deals</h1>
+      <div class="sidebar-bottom">
+        <div class="sidebar-account">
+          <button id="accountBtn" class="account-btn" type="button">
+            <span id="accountAvatar" class="account-avatar">U</span>
+            <div class="account-info">
+              <span id="accountName" class="account-name">Account</span>
+              <i data-lucide="chevron-up" class="chevron"></i>
+            </div>
+          </button>
 
-  <div id="savedDealsContainer" class="deals-grid"></div>
+          <div id="accountMenu" class="account-menu">
+            <a href="index.html"><i data-lucide="home"></i> Home</a>
+            <button id="logoutBtn" type="button"><i data-lucide="log-out"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-  <div id="emptyState" class="empty" style="display:none;">
-    No manufacturing deals yet.
+    <main class="main-content">
+      <button id="hamburger" class="hamburger" type="button" aria-label="Open menu" aria-controls="app-sidebar" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="saved-container">
+        <div class="page-header">
+          <h1>Saved Manufacturing Deals</h1>
+          <p>Review and manage your analyzed manufacturing projects.</p>
+        </div>
+
+        <div id="savedDealsContainer" class="deals-grid"></div>
+
+        <div id="emptyState" class="empty" style="display:none;">
+          <i data-lucide="folder-open"></i>
+          <p>No manufacturing deals yet.</p>
+        </div>
+      </div>
+    </main>
   </div>
 
-</div>
-
-<script src="js/savedDealsManufacturing.js"></script>
-
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/hamburger.js"></script>
+  <script src="js/user-display.js"></script>
+  <script src="js/savedDealsManufacturing.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
+
 </html>
