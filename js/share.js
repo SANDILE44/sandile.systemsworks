@@ -34,19 +34,17 @@ function addShareStyles() {
     body {
       box-sizing: border-box;
       padding: 1.5rem 0;
-      background:
-        radial-gradient(ellipse at 12% 5%, rgba(0, 180, 216, .14), transparent 38%),
-        radial-gradient(ellipse at 90% 90%, rgba(99, 102, 241, .14), transparent 36%),
-        linear-gradient(145deg, #071226, #020617 60%, #09152a);
+      background: linear-gradient(135deg, var(--bg-soft, #040918), var(--bg-main, #020617));
+      color: var(--text-main, #e5e7eb);
     }
     .report-container {
       box-sizing: border-box;
       width: min(92%, 780px);
       max-width: 780px;
       padding: clamp(1.25rem, 4vw, 2.75rem);
-      background: linear-gradient(155deg, rgba(12, 27, 49, .98), rgba(4, 11, 27, .99));
-      border-color: rgba(148, 163, 184, .17);
-      box-shadow: 0 30px 90px rgba(0, 0, 0, .42), 0 0 70px rgba(0, 180, 216, .06);
+      background: var(--bg-main, #020617);
+      border-color: var(--border-soft, rgba(255, 255, 255, .08));
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .5), 0 0 28px rgba(0, 180, 216, .05);
     }
     .report-container > header {
       margin-bottom: 1.5rem;
@@ -60,7 +58,7 @@ function addShareStyles() {
     .share-report { display: grid; gap: 1.25rem; }
     .report-kicker {
       margin: 0 0 .8rem;
-      color: #67e8f9;
+      color: var(--accent, #00b4d8);
       font-size: .72rem;
       font-weight: 800;
       letter-spacing: .13em;
@@ -70,9 +68,9 @@ function addShareStyles() {
       position: relative;
       overflow: hidden;
       padding: clamp(1.25rem, 4vw, 2rem);
-      border: 1px solid rgba(103, 232, 249, .2);
+      border: 1px solid rgba(0, 180, 216, .3);
       border-radius: 20px;
-      background: linear-gradient(120deg, rgba(8, 145, 178, .16), rgba(30, 41, 59, .55) 55%, rgba(99, 102, 241, .12));
+      background: linear-gradient(135deg, rgba(0, 180, 216, .12), rgba(0, 150, 199, .04) 58%, rgba(255, 255, 255, .015));
     }
     .share-hero:after {
       position: absolute;
@@ -80,15 +78,15 @@ function addShareStyles() {
       right: -50px;
       width: 190px;
       height: 190px;
-      border: 1px solid rgba(103, 232, 249, .11);
+      border: 1px solid rgba(0, 180, 216, .13);
       border-radius: 50%;
-      box-shadow: 0 0 0 22px rgba(103, 232, 249, .025), 0 0 0 46px rgba(103, 232, 249, .02);
+      box-shadow: 0 0 0 22px rgba(0, 180, 216, .025), 0 0 0 46px rgba(0, 180, 216, .02);
       content: "";
       pointer-events: none;
     }
     .share-profit-label {
       margin: 0 0 .35rem;
-      color: #a5b4c8;
+      color: var(--text-muted, #94a3b8);
       font-size: .78rem;
       font-weight: 700;
       letter-spacing: .1em;
@@ -96,7 +94,7 @@ function addShareStyles() {
     }
     .share-profit {
       margin: 0;
-      color: #5eead4;
+      color: #22c55e;
       font-size: clamp(2rem, 8vw, 3.4rem);
       font-weight: 800;
       letter-spacing: -.055em;
@@ -112,14 +110,14 @@ function addShareStyles() {
     .share-metric, .share-detail, .share-input {
       min-width: 0;
       padding: 1rem;
-      border: 1px solid rgba(148, 163, 184, .14);
+      border: 1px solid var(--border-soft, rgba(255, 255, 255, .08));
       border-radius: 14px;
-      background: rgba(15, 29, 50, .72);
+      background: #030922;
     }
     .share-metric span, .share-detail span, .share-input span {
       display: block;
       margin-bottom: .4rem;
-      color: #94a3b8;
+      color: var(--text-muted, #94a3b8);
       font-size: .72rem;
       font-weight: 700;
       letter-spacing: .06em;
@@ -127,23 +125,23 @@ function addShareStyles() {
     }
     .share-metric strong, .share-detail strong, .share-input strong {
       display: block;
-      color: #f1f5f9;
+      color: var(--text-main, #e5e7eb);
       font-size: 1.05rem;
       line-height: 1.35;
       overflow-wrap: anywhere;
     }
-    .share-metric:nth-child(1) { border-top: 2px solid #5eead4; }
-    .share-metric:nth-child(2) { border-top: 2px solid #67e8f9; }
-    .share-metric:nth-child(3) { border-top: 2px solid #a5b4fc; }
+    .share-metric:nth-child(1) { border-top: 2px solid #22c55e; }
+    .share-metric:nth-child(2) { border-top: 2px solid var(--accent, #00b4d8); }
+    .share-metric:nth-child(3) { border-top: 2px solid #0096c7; }
     .share-section {
       padding: 1.15rem;
-      border: 1px solid rgba(148, 163, 184, .14);
+      border: 1px solid var(--border-soft, rgba(255, 255, 255, .08));
       border-radius: 16px;
-      background: rgba(10, 22, 40, .76);
+      background: #030922;
     }
     .share-section h2 {
       margin: 0 0 .85rem;
-      color: #e2e8f0;
+      color: var(--accent, #00b4d8);
       font-size: 1rem;
       letter-spacing: -.01em;
     }
@@ -152,9 +150,9 @@ function addShareStyles() {
       align-items: flex-start;
       gap: .8rem;
       padding: 1rem;
-      border: 1px solid rgba(103, 232, 249, .2);
+      border: 1px solid rgba(0, 180, 216, .24);
       border-radius: 12px;
-      background: rgba(8, 145, 178, .08);
+      background: rgba(0, 180, 216, .06);
     }
     .share-decision-mark {
       flex: 0 0 auto;
@@ -163,13 +161,13 @@ function addShareStyles() {
       height: 2rem;
       place-items: center;
       border-radius: 10px;
-      background: rgba(103, 232, 249, .12);
-      color: #67e8f9;
+      background: rgba(0, 180, 216, .14);
+      color: var(--accent, #00b4d8);
       font-weight: 800;
     }
     .share-decision p { margin: 0; }
-    .share-decision strong { color: #cffafe; }
-    .share-decision-copy { margin-top: .35rem !important; color: #a5b4c8; line-height: 1.6; }
+    .share-decision strong { color: var(--text-main, #e5e7eb); }
+    .share-decision-copy { margin-top: .35rem !important; color: var(--text-muted, #94a3b8); line-height: 1.6; }
     .share-risk {
       display: inline-block;
       margin-top: .65rem;
@@ -183,7 +181,7 @@ function addShareStyles() {
     }
     .share-footer {
       margin: .25rem 0 0;
-      color: #64748b;
+      color: var(--text-muted, #94a3b8);
       font-size: .72rem;
       line-height: 1.5;
       text-align: center;
