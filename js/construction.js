@@ -362,7 +362,7 @@ async function saveDeal(e) {
   }
 
   /* ================= EXPORT REPORT (PRINT) ================= */
-  function exportReport() {
+  async function exportReport() {
     if (!latestData) return alert("Run the engine first to generate data.");
 
     const projectName = $("client-name-input")?.value || "Standard Construction Project";
@@ -375,7 +375,80 @@ async function saveDeal(e) {
     if ($("print-project-name")) $("print-project-name").textContent = projectName;
     if ($("print-date")) $("print-date").textContent = dateStr;
 
-    window.print();
+    try {
+      if (!window.jspdf?.jsPDF) {
+        const pdfScript = document.createElement("script");
+        pdfScript.src = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
+        pdfScript.onload = () => generateConstructionPdf(projectName, dateStr);
+        pdfScript.onerror = () => window.print();
+        document.head.appendChild(pdfScript);
+        return;
+      }
+
+      generateConstructionPdf(projectName, dateStr);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      window.print();
+    }
+  }
+
+  function generateConstructionPdf(projectName, dateStr) {
+    const { jsPDF } = window.jspdf;
+    const i = getInputs();
+    const d = latestData;
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const margin = 40;
+    let y = 56;
+
+    doc.setFillColor(2, 6, 23);
+    doc.rect(0, 0, 595, 842, "F");
+    doc.setTextColor(229, 231, 235);
+    doc.setFontSize(22);
+    doc.text("Sandile SystemsWorks", margin, y);
+    doc.setFontSize(12);
+    doc.setTextColor(148, 163, 184);
+    doc.text("Project Intelligence & Profitability Report", margin, y + 18);
+    doc.setTextColor(34, 197, 94);
+    doc.text(projectName, margin, y + 38);
+    doc.setTextColor(148, 163, 184);
+    doc.text(dateStr, margin + 350, y + 38);
+    doc.setDrawColor(0, 180, 216);
+    doc.line(margin, y + 50, 555, y + 50);
+
+    y = y + 90;
+    const rows = [
+      ["Contract value", money(i.value)],
+      ["Material cost", money(i.material)],
+      ["Labor cost (monthly)", money(i.laborMonthly)],
+      ["Equipment cost (monthly)", money(i.equipmentMonthly)],
+      ["Fixed costs (monthly)", money(i.fixedMonthly)],
+      ["Duration (months)", i.months],
+      ["Total costs", money(d.totalCosts)],
+      ["Net profit", money(d.profit)],
+      ["Margin", percent(d.margin)],
+      ["ROI", percent(d.roi)],
+      ["Break-even value", money(d.breakEvenValue)],
+      ["Monthly profit", money(d.monthlyProfit)],
+      ["Annual profit", money(d.annualProfit)],
+      ["Decision", d.decision || "—"],
+      ["Advice", d.advice || "—"]
+    ];
+
+    rows.forEach(([label, value]) => {
+      if (y > 760) {
+        doc.addPage();
+        y = 56;
+      }
+      doc.setTextColor(148, 163, 184);
+      doc.setFontSize(10);
+      doc.text(String(label), margin, y);
+      doc.setTextColor(229, 231, 235);
+      doc.setFontSize(11);
+      doc.text(String(value), margin + 180, y, { maxWidth: 320 });
+      y += 20;
+    });
+
+    doc.save("construction-report.pdf");
   }
 
   /* ================= SHARE DEAL ================= */

@@ -134,7 +134,8 @@
 
   /* ================= ACTIONS ================= */
   function resetAll() {
-    document.querySelectorAll(".input-section input").forEach(i => i.value = "");
+    document.querySelectorAll(".input-section input:not(#mfg-project-name)").forEach(i => i.value = "");
+    if ($("mfg-project-name")) $("mfg-project-name").value = "";
     latestData = null;
     renderEmpty();
   }
@@ -142,8 +143,10 @@
   async function saveDeal() {
     if (!latestData) return alert("Run calculation first");
     const token = localStorage.getItem("token");
+    const clientNameValue = $("mfg-project-name")?.value || "Untitled Project";
     const payload = {
       type: "manufacturing",
+      clientName: clientNameValue,
       inputs: getInputs(),
       results: latestData
     };
@@ -164,7 +167,7 @@
     if (!latestData) return alert("Run calculation first");
 
     const token = localStorage.getItem("token");
-    const projectName = "Manufacturing Profitability Analysis";
+    const projectName = $("mfg-project-name")?.value || "Manufacturing Profitability Analysis";
 
     // 1. Construct the payload to match the backend SharedDealSchema
     const payload = {
@@ -261,11 +264,10 @@
     a.click();
   }
 
-  function exportManufacturingReport() {
+  async function exportManufacturingReport() {
     if (!latestData) return alert("Run calculation first");
 
-    // 1. Fill in the print-only details
-    const projectName = "Manufacturing Analysis";
+    const projectName = $("mfg-project-name")?.value.trim() || "Manufacturing Analysis";
     const dateStr = new Date().toLocaleDateString('en-ZA', {
       year: 'numeric',
       month: 'long',
@@ -275,8 +277,90 @@
     if ($("print-project-name")) $("print-project-name").textContent = projectName;
     if ($("print-date")) $("print-date").textContent = dateStr;
 
-    // 2. Trigger the Print Dialog
-    window.print();
+    try {
+      if (!window.jspdf?.jsPDF) {
+        const pdfScript = document.createElement("script");
+        pdfScript.src = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
+        pdfScript.onload = () => generateManufacturingPdf(projectName, dateStr);
+        pdfScript.onerror = () => window.print();
+        document.head.appendChild(pdfScript);
+        return;
+      }
+
+      generateManufacturingPdf(projectName, dateStr);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      window.print();
+    }
+  }
+
+  function generateManufacturingPdf(projectName, dateStr) {
+    const { jsPDF } = window.jspdf;
+    const i = getInputs();
+    const d = latestData;
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const margin = 40;
+    let y = 56;
+
+    doc.setFillColor(2, 6, 23);
+    doc.rect(0, 0, 595, 842, "F");
+
+    doc.setTextColor(229, 231, 235);
+    doc.setFontSize(22);
+    doc.text("Sandile SystemsWorks", margin, y);
+    doc.setFontSize(12);
+    doc.setTextColor(148, 163, 184);
+    doc.text("Project Intelligence & Profitability Report", margin, y + 18);
+    doc.setTextColor(34, 197, 94);
+    doc.text(projectName, margin, y + 38, { maxWidth: 515 });
+    doc.setTextColor(148, 163, 184);
+    doc.text(dateStr, margin, y + 56);
+
+    doc.setDrawColor(0, 180, 216);
+    doc.line(margin, y + 68, 555, y + 68);
+
+    y = y + 108;
+    const metrics = [
+      ["Units", i.units],
+      ["Selling price per unit", money(i.price)],
+      ["Material cost per unit", money(i.material)],
+      ["Labor cost", money(i.labor)],
+      ["Fixed costs", money(i.fixed)],
+      ["Operational costs", money(i.operational)],
+      ["Revenue", money(d.revenue)],
+      ["Total costs", money(d.totalCosts)],
+      ["Profit", money(d.profit)],
+      ["Margin", percent(d.margin)],
+      ["ROI", percent(d.roi)],
+      ["Cost per unit", money(d.costPerUnit)],
+      ["Profit per unit", money(d.profitPerUnit)],
+      ["Break-even units", d.breakEvenUnits],
+      ["Decision", d.status],
+      ["Advice", d.action]
+    ];
+
+    metrics.forEach(([label, value]) => {
+      if (y > 760) {
+        doc.addPage();
+        y = 56;
+      }
+
+      doc.setTextColor(148, 163, 184);
+      doc.setFontSize(10);
+      doc.text(String(label), margin, y);
+      doc.setTextColor(229, 231, 235);
+      doc.setFontSize(11);
+      doc.text(String(value), margin + 180, y, { maxWidth: 320 });
+      y += 20;
+    });
+
+    const filename = projectName
+      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "manufacturing";
+    doc.save(`${filename}-report.pdf`);
   }
 
   function hydrateEdit() {
@@ -285,6 +369,7 @@
     const d = JSON.parse(edit);
     if (d.type !== "manufacturing") return;
     const i = d.inputs || {};
+    $("mfg-project-name").value = d.clientName || d.name || "";
     $("mfg-units").value = i.units || "";
     $("mfg-price").value = i.price || "";
     $("mfg-material").value = i.material || "";
@@ -297,7 +382,7 @@
 
   /* ================= INIT ================= */
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".input-section input").forEach(input => {
+    document.querySelectorAll(".input-section input:not(#mfg-project-name)").forEach(input => {
       input.addEventListener("input", () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(runManufacturing, 250);
