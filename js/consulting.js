@@ -5,6 +5,7 @@
 
   let debounceTimer;
   let latestData = null;
+  let latestInputs = null;
 
   /* ================= FORMATTERS ================= */
   const money = (v) =>
@@ -66,10 +67,12 @@
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    const data = await api("/api/calculators/consulting/project", "POST", getInputs());
+    const inputs = getInputs();
+    const data = await api("/api/calculators/consulting/project", "POST", inputs);
 
     if (!data) return;
     latestData = data;
+    latestInputs = { ...inputs };
 
     /* ================= OUTPUTS ================= */
     $("consult-revenue").textContent = money(data.totalRevenue);
@@ -328,6 +331,18 @@
     }
   }
 
+  function addToCompare() {
+    if (!latestData) return alert("Run the calculator first.");
+    const saved = window.DealCompare?.addCurrentScenario({
+      type: "consulting",
+      name: $("consult-project-name")?.value || "Consulting project",
+      inputs: getInputs(),
+      calculatedInputs: latestInputs,
+      results: latestData
+    });
+    if (saved) window.location.href = "compare.html";
+  }
+
   /* ================= SAVE / UPDATE ================= */
   async function saveDeal() {
     if (!latestData) return alert("Run calculator first");
@@ -362,6 +377,7 @@
   function resetAll() {
     document.querySelectorAll(".input-section input").forEach(i => i.value = "");
     latestData = null;
+    latestInputs = null;
     $("status").textContent = "—";
     $("status").className = "";
     $("decisionAdvice").textContent = "";
@@ -389,10 +405,27 @@
     $("exportCsvBtn")?.addEventListener("click", exportCSV);
     $("exportReportBtn")?.addEventListener("click", exportReport);
     $("shareBtn")?.addEventListener("click", shareDeal);
+    $("compareBtn")?.addEventListener("click", addToCompare);
 
     // Handle Edit Mode
+    const compareScenario = window.DealCompare?.getEditingScenario("consulting");
     const editDeal = JSON.parse(localStorage.getItem("editDeal"));
-    if (editDeal && editDeal.type === "consulting") {
+    if (compareScenario) {
+      const i = compareScenario.inputs || {};
+      $("consult-project-name").value = compareScenario.name || "";
+      $("consult-hours").value = i.hours ?? "";
+      $("consult-rate").value = i.rate ?? "";
+      $("consult-expenses").value = i.expenses ?? "";
+      $("consult-labor").value = i.labor ?? "";
+      $("consult-fixed").value = i.fixed ?? "";
+      $("consult-discount").value = i.discountPct ?? "";
+      $("consult-overtime-hours").value = i.otHours ?? "";
+      $("consult-overtime-rate").value = i.otRate ?? "";
+      $("consult-variable-costs").value = i.variableCosts ?? "";
+      $("consult-contingency").value = i.contingencyPct ?? "";
+      $("compareBtn").querySelector("span").textContent = "Update Compare";
+      runConsulting();
+    } else if (editDeal && editDeal.type === "consulting") {
       const i = editDeal.inputs || {};
       $("consult-project-name").value = editDeal.clientName || editDeal.name || "";
       $("consult-hours").value = i.hours || "";

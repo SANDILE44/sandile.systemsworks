@@ -4,6 +4,7 @@
 
   let debounceTimer;
   let latestData = null;
+  let latestInputs = null;
 
   /* ================= FORMATTERS ================= */
   const money = (v) =>
@@ -32,11 +33,24 @@
     };
   }
 
+  function addToCompare() {
+    if (!latestData) return alert("Run calculation first.");
+    const saved = window.DealCompare?.addCurrentScenario({
+      type: "manufacturing",
+      name: $("mfg-project-name")?.value || "Manufacturing scenario",
+      inputs: getInputs(),
+      calculatedInputs: latestInputs,
+      results: latestData
+    });
+    if (saved) window.location.href = "compare.html";
+  }
+
   /* ================= ENGINE ================= */
   function runManufacturing() {
     const i = getInputs();
 
     if (i.units <= 0 || i.price <= 0) {
+      latestInputs = null;
       renderEmpty();
       return;
     }
@@ -89,6 +103,7 @@
         `You need to sell at least ${breakEvenUnits} units to cover all costs.`
       ]
     };
+    latestInputs = { ...i };
 
     render(latestData);
   }
@@ -137,6 +152,7 @@
     document.querySelectorAll(".input-section input:not(#mfg-project-name)").forEach(i => i.value = "");
     if ($("mfg-project-name")) $("mfg-project-name").value = "";
     latestData = null;
+    latestInputs = null;
     renderEmpty();
   }
 
@@ -364,6 +380,20 @@
   }
 
   function hydrateEdit() {
+    const compareScenario = window.DealCompare?.getEditingScenario("manufacturing");
+    if (compareScenario) {
+      const i = compareScenario.inputs || {};
+      $("mfg-project-name").value = compareScenario.name || "";
+      $("mfg-units").value = i.units ?? "";
+      $("mfg-price").value = i.price ?? "";
+      $("mfg-material").value = i.material ?? "";
+      $("mfg-labor").value = i.labor ?? "";
+      $("mfg-fixed").value = i.fixed ?? "";
+      $("mfg-operational").value = i.operational ?? "";
+      $("compareBtn").querySelector("span").textContent = "Update Compare";
+      return;
+    }
+
     const edit = localStorage.getItem("editDeal");
     if (!edit) return;
     const d = JSON.parse(edit);
@@ -392,6 +422,7 @@
     $("resetBtn")?.addEventListener("click", resetAll);
     $("saveDealBtn")?.addEventListener("click", saveDeal);
     $("shareBtn")?.addEventListener("click", shareDeal);
+    $("compareBtn")?.addEventListener("click", addToCompare);
     $("exportCsvBtn")?.addEventListener("click", exportManufacturingCSV);
     $("exportReportBtn")?.addEventListener("click", exportManufacturingReport);
 

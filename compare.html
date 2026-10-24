@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#020617">
+  <title>Compare Business Scenarios | Sandile SystemsWorks</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-main: #020617;
+      --bg-soft: #040918;
+      --panel: #030922;
+      --border-soft: rgba(255, 255, 255, .08);
+      --text-main: #e5e7eb;
+      --text-muted: #94a3b8;
+      --accent: #00b4d8;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 2rem 1rem 3rem;
+      background: linear-gradient(135deg, var(--bg-soft), var(--bg-main));
+      color: var(--text-main);
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      letter-spacing: -.01em;
+    }
+    button, input { font: inherit; }
+    .compare-shell { width: min(1120px, 100%); margin: 0 auto; }
+    .compare-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: clamp(1.25rem, 4vw, 2rem);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      background: rgba(2, 6, 23, .76);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .24);
+    }
+    .brand-tag {
+      display: block;
+      margin-bottom: .6rem;
+      color: var(--accent);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 0; color: var(--accent); font-size: clamp(1.7rem, 4vw, 2.4rem); }
+    .intro { max-width: 620px; margin: .65rem 0 0; color: var(--text-muted); line-height: 1.6; }
+    .header-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .6rem; }
+    .compare-count {
+      align-self: center;
+      padding: .55rem .8rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: .8rem;
+      white-space: nowrap;
+    }
+    .compare-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      padding: .6rem .85rem;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: .85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: filter .15s ease, transform .15s ease, border-color .15s ease;
+    }
+    .compare-button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .compare-button:focus-visible, .scenario-name:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .compare-button.primary {
+      background: linear-gradient(135deg, var(--accent), #0096c7);
+      color: #001018;
+    }
+    .compare-button.secondary {
+      border-color: rgba(0, 180, 216, .35);
+      background: rgba(0, 180, 216, .08);
+      color: var(--accent);
+    }
+    .compare-button.remove {
+      border-color: rgba(239, 68, 68, .25);
+      background: rgba(239, 68, 68, .08);
+      color: #fca5a5;
+    }
+    .compare-empty, .comparison-panel, .scenario-card, .add-scenario-panel {
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      background: var(--bg-main);
+      box-shadow: 0 16px 35px rgba(0, 0, 0, .2);
+    }
+    .compare-empty { padding: clamp(1.5rem, 5vw, 3rem); text-align: center; }
+    .empty-icon {
+      display: grid;
+      width: 3rem;
+      height: 3rem;
+      margin: 0 auto 1rem;
+      place-items: center;
+      border: 1px solid rgba(0, 180, 216, .3);
+      border-radius: 14px;
+      background: rgba(0, 180, 216, .1);
+      color: var(--accent);
+      font-size: 1.8rem;
+    }
+    .compare-empty h2, .scenario-card h2 { margin: 0; color: var(--text-main); font-size: 1.15rem; }
+    .compare-empty p { max-width: 650px; margin: .75rem auto 1.25rem; color: var(--text-muted); line-height: 1.6; }
+    .tool-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; }
+    .comparison-panel { overflow: hidden; }
+    .table-scroll { overflow-x: auto; }
+    .comparison-table { width: 100%; min-width: 640px; border-collapse: collapse; }
+    .comparison-table th, .comparison-table td {
+      padding: .9rem 1rem;
+      border-bottom: 1px solid var(--border-soft);
+      text-align: left;
+      vertical-align: middle;
+    }
+    .comparison-table thead th { min-width: 165px; background: #030922; }
+    .comparison-table thead th:first-child { width: 190px; color: var(--text-muted); }
+    .comparison-table tbody th { color: var(--text-muted); font-size: .9rem; font-weight: 600; }
+    .comparison-table td { color: var(--text-main); font-weight: 700; }
+    .comparison-table tr:last-child th, .comparison-table tr:last-child td { border-bottom: 0; }
+    .comparison-table .highlight-row th, .comparison-table .highlight-row td { color: #22c55e; font-size: 1.05rem; }
+    .scenario-number {
+      display: block;
+      margin-bottom: .4rem;
+      color: var(--accent);
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .scenario-name {
+      width: 100%;
+      padding: .5rem .55rem;
+      border: 1px solid var(--border-soft);
+      border-radius: 7px;
+      background: #111827;
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; margin-top: 1rem; }
+    .scenario-card { min-width: 0; padding: 1rem; }
+    .scenario-card-heading { min-height: 3.2rem; margin-bottom: .7rem; }
+    .scenario-card details { border-top: 1px solid var(--border-soft); padding-top: .8rem; }
+    .scenario-card summary { color: var(--accent); cursor: pointer; font-size: .85rem; font-weight: 700; }
+    .assumptions-list { margin-top: .5rem; }
+    .assumption-row { display: flex; justify-content: space-between; gap: .5rem; padding: .45rem 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .8rem; }
+    .assumption-row span { color: var(--text-muted); }
+    .assumption-row strong { text-align: right; overflow-wrap: anywhere; }
+    .scenario-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .9rem; }
+    .scenario-actions .compare-button { flex: 1 1 auto; min-height: 36px; padding: .5rem; font-size: .78rem; }
+    .add-scenario-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding: 1rem 1.2rem;
+    }
+    .add-scenario-panel p { margin: 0; color: var(--text-muted); }
+    .page-footer { margin-top: 1.5rem; color: #64748b; font-size: .75rem; text-align: center; }
+    @media (max-width: 760px) {
+      .compare-header { flex-direction: column; }
+      .header-actions { justify-content: flex-start; }
+      .scenario-grid { grid-template-columns: 1fr; }
+      .scenario-card-heading { min-height: 0; }
+    }
+    @media (max-width: 480px) {
+      body { padding: 1rem .65rem 2rem; }
+      .add-scenario-panel { align-items: flex-start; flex-direction: column; }
+      .compare-count { align-self: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="compare-shell">
+    <header class="compare-header">
+      <div>
+        <span class="brand-tag">Sandile SystemsWorks · Decision tools</span>
+        <h1>Compare scenarios</h1>
+        <p class="intro">Compare up to three versions of the same project. Change assumptions, duplicate a scenario, and see how the business outcomes move.</p>
+      </div>
+      <div class="header-actions">
+        <span id="compare-count" class="compare-count">0 of 3 scenarios</span>
+        <button id="clear-comparison" class="compare-button remove" type="button" hidden>Clear comparison</button>
+      </div>
+    </header>
+    <div id="compare-content" aria-live="polite"></div>
+    <footer class="page-footer">Comparison data is saved in this browser and is not shared with other devices.</footer>
+  </main>
+  <script src="js/compare.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@
 
   let debounceTimer;
   let latestData = null;
+  let latestInputs = null;
 
   /* ================= FORMATTERS ================= */
   const money = (v) =>
@@ -31,6 +32,18 @@
     };
   }
 
+  function addToCompare() {
+    if (!latestData) return alert("Run the engine first to calculate project data.");
+    const saved = window.DealCompare?.addCurrentScenario({
+      type: "construction",
+      name: $("client-name-input")?.value || "Construction project",
+      inputs: getInputs(),
+      calculatedInputs: latestInputs,
+      results: latestData
+    });
+    if (saved) window.location.href = "compare.html";
+  }
+
   /* ================= COLOR ================= */
   function setStatusColor(el, riskLevel) {
     if (!el) return;
@@ -44,6 +57,21 @@
 
   /* ================= LOAD EDIT (FIXED LIFECYCLE) ================= */
   function loadEditDeal() {
+    const compareScenario = window.DealCompare?.getEditingScenario("construction");
+    if (compareScenario) {
+      const i = compareScenario.inputs || {};
+      $("client-name-input").value = compareScenario.name || "";
+      $("const-value").value = i.value ?? "";
+      $("const-material").value = i.material ?? "";
+      $("const-labor").value = i.laborMonthly ?? "";
+      $("const-equipment").value = i.equipmentMonthly ?? "";
+      $("const-fixed").value = i.fixedMonthly ?? "";
+      $("const-duration").value = i.months ?? "";
+      $("compareBtn").querySelector("span").textContent = "Update Compare";
+      run();
+      return;
+    }
+
     const edit = localStorage.getItem("editDeal");
     if (!edit) {
       // No edit profile found, run standard calculator default init setup
@@ -100,6 +128,7 @@
 
       const d = await res.json();
       latestData = d;
+      latestInputs = { ...inputs };
 
       // 1. Inject Text Metrics
       $("const-total-costs").textContent = money(d.totalCosts);
@@ -305,6 +334,7 @@ async function saveDeal(e) {
   function resetAll() {
     document.querySelectorAll(".input-section input").forEach(i => i.value = "");
     latestData = null;
+    latestInputs = null;
 
     $("decision-status").textContent = "—";
     $("decision-advice").textContent = "";
@@ -548,6 +578,7 @@ async function saveDeal(e) {
   $("exportCsvBtn")?.addEventListener("click", exportToCsv);
   $("exportReportBtn")?.addEventListener("click", exportReport);
   $("shareBtn")?.addEventListener("click", shareDeal);
+  $("compareBtn")?.addEventListener("click", addToCompare);
 
   /* ================= INIT CONTROL FLOW ================= */
   // Pull historical records safely; it handles its own internal lifecycle call to run()

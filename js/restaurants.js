@@ -4,6 +4,7 @@
 
   let debounceTimer;
   let latestData = null;
+  let latestInputs = null;
 
   /* ================= FORMATTERS ================= */
   const money = (v) =>
@@ -71,6 +72,7 @@
     if (!data) return;
 
     latestData = data;
+    latestInputs = { ...inputs };
 
     // UI Updates
     $("dailyCovers").textContent = data.dailyCovers ?? 0;
@@ -140,6 +142,7 @@
     document.querySelectorAll(".input-section input:not(#restaurant-project-name)").forEach(i => i.value = "");
     if ($("restaurant-project-name")) $("restaurant-project-name").value = "";
     latestData = null;
+    latestInputs = null;
     [
       "dailyCovers","revenue","foodCost","totalCosts","ratio",
       "profit","margin","profitCover","monthly","annual","breakeven"
@@ -259,6 +262,18 @@
       console.error('Sharing Error:', err);
       alert("Action failed. Please check the console for details.");
     }
+  }
+
+  function addToCompare() {
+    if (!latestData) return alert("Run calculation first.");
+    const saved = window.DealCompare?.addCurrentScenario({
+      type: "restaurant",
+      name: $("restaurant-project-name")?.value || "Restaurant scenario",
+      inputs: getInputs(),
+      calculatedInputs: latestInputs,
+      results: latestData
+    });
+    if (saved) window.location.href = "compare.html";
   }
 
   function exportCSV() {
@@ -394,23 +409,39 @@
     $("resetBtn")?.addEventListener("click", resetAll);
     $("saveDealBtn")?.addEventListener("click", saveDeal);
     $("shareBtn")?.addEventListener("click", shareDeal);
+    $("compareBtn")?.addEventListener("click", addToCompare);
     $("exportCsvBtn")?.addEventListener("click", exportCSV);
     $("exportReportBtn")?.addEventListener("click", exportReport);
 
     // Load Edit Mode
-    const editData = localStorage.getItem("editDeal");
-    if (editData) {
-      const d = JSON.parse(editData);
-      if (d.type === "restaurant") {
-        $("restaurant-project-name").value = d.clientName || d.name || "";
-        $("tables").value = d.inputs?.tables || "";
-        $("covers").value = d.inputs?.coversPerTable || "";
-        $("check").value = d.inputs?.avgCheck || "";
-        $("foodPercent").value = d.inputs?.foodPct || "";
-        $("labor").value = d.inputs?.labor || "";
-        $("fixed").value = d.inputs?.fixed || "";
-        $("days").value = d.inputs?.days || "";
-        runRestaurant();
+    const compareScenario = window.DealCompare?.getEditingScenario("restaurant");
+    if (compareScenario) {
+      const i = compareScenario.inputs || {};
+      $("restaurant-project-name").value = compareScenario.name || "";
+      $("tables").value = i.tables ?? "";
+      $("covers").value = i.coversPerTable ?? "";
+      $("check").value = i.avgCheck ?? "";
+      $("foodPercent").value = i.foodPct ?? "";
+      $("labor").value = i.labor ?? "";
+      $("fixed").value = i.fixed ?? "";
+      $("days").value = i.days ?? "";
+      $("compareBtn").querySelector("span").textContent = "Update Compare";
+      runRestaurant();
+    } else {
+      const editData = localStorage.getItem("editDeal");
+      if (editData) {
+        const d = JSON.parse(editData);
+        if (d.type === "restaurant") {
+          $("restaurant-project-name").value = d.clientName || d.name || "";
+          $("tables").value = d.inputs?.tables || "";
+          $("covers").value = d.inputs?.coversPerTable || "";
+          $("check").value = d.inputs?.avgCheck || "";
+          $("foodPercent").value = d.inputs?.foodPct || "";
+          $("labor").value = d.inputs?.labor || "";
+          $("fixed").value = d.inputs?.fixed || "";
+          $("days").value = d.inputs?.days || "";
+          runRestaurant();
+        }
       }
     }
   });
