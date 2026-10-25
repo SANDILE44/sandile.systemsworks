@@ -49,7 +49,8 @@
      USER INTERFACE (Names & Avatars)
      ============================================================ */
   function setUserUI(user) {
-    const name = user?.name || (user?.email ? user.email.split('@')[0] : 'Account');
+    // Always use the username from account creation if available
+    const name = user?.name || user?.username || (user?.email ? user.email.split('@')[0] : 'Account');
 
     if ($('usernameDisplay')) $('usernameDisplay').textContent = name;
     if ($('accountName')) $('accountName').textContent = name;
@@ -122,11 +123,18 @@
     const statLogin = $('statLogin');
     if (!statLogin) return;
 
-    statLogin.textContent = new Date().toLocaleDateString('en-ZA', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
+    // Use the user's account creation date if available
+    const user = window.auth.getCachedUser()?.user;
+    let dateStr = '—';
+    if (user && user.created) {
+      const createdDate = new Date(user.created);
+      dateStr = createdDate.toLocaleDateString('en-ZA', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+    statLogin.textContent = dateStr;
   }
 
   /* ============================================================
@@ -218,6 +226,8 @@
       const profile = await window.auth.requireAuth();
       if (!profile?.user) return; // auth.js handles redirect if user is missing
 
+      // Store user in cache for global access
+      window.auth.cachedUser = profile;
       const user = profile.user;
 
       // 3. Populate Dashboard

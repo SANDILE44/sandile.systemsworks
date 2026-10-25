@@ -122,25 +122,40 @@ function getSavedDeals(type) {
 
 }
 
-function saveDeal(type, payload) {
-
-    const deals = getSavedDeals(type);
-
-    const deal = {
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
+async function saveDeal(type, payload) {
+    // Use API endpoint for saving deals, like other industries
+    const token = localStorage.getItem("token");
+    if (!token) {
+        location.replace("login.html");
+        return;
+    }
+    const dealPayload = {
+        type,
         ...payload
     };
-
-    deals.push(deal);
-
-    localStorage.setItem(
-        `deals_${type}`,
-        JSON.stringify(deals)
-    );
-
-    return deal;
-
+    const res = await fetch(`${API_BASE}/api/saved-deals`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dealPayload)
+    });
+    if (res.status === 401) {
+        location.replace("login.html");
+        return;
+    }
+    if (res.status === 403) {
+        location.replace("payment.html");
+        return;
+    }
+    if (!res.ok) {
+        const errorText = await res.text();
+        alert("Failed to save deal: " + errorText);
+        return null;
+    }
+    alert("Deal saved successfully!");
+    return await res.json();
 }
 
 function updateDeal(type, id, payload) {

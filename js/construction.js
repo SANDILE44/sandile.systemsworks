@@ -571,14 +571,14 @@ async function saveDeal(e) {
     });
   });
 
-  $("resetBtn")?.addEventListener("click", resetAll);
+  window.ButtonLoading.bind($("resetBtn"), resetAll);
   
   // 🎯 SECURED BINDINGS: Passing standard explicitly structured events to block browser overrides
-  $("saveDealBtn")?.addEventListener("click", (e) => saveDeal(e));
-  $("exportCsvBtn")?.addEventListener("click", exportToCsv);
-  $("exportReportBtn")?.addEventListener("click", exportReport);
-  $("shareBtn")?.addEventListener("click", shareDeal);
-  $("compareBtn")?.addEventListener("click", addToCompare);
+  window.ButtonLoading.bind($("saveDealBtn"), saveDeal);
+  window.ButtonLoading.bind($("exportCsvBtn"), exportToCsv);
+  window.ButtonLoading.bind($("exportReportBtn"), exportReport);
+  window.ButtonLoading.bind($("shareBtn"), shareDeal);
+  window.ButtonLoading.bind($("compareBtn"), addToCompare);
 
   /* ================= INIT CONTROL FLOW ================= */
   // Pull historical records safely; it handles its own internal lifecycle call to run()

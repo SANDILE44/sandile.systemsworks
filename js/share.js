@@ -64,6 +64,29 @@ function addShareStyles() {
       letter-spacing: .13em;
       text-transform: uppercase;
     }
+    .share-project-name {
+      padding: 1rem 1.15rem;
+      border: 1px solid var(--border-soft, rgba(255, 255, 255, .08));
+      border-left: 3px solid var(--accent, #00b4d8);
+      border-radius: 12px;
+      background: #030922;
+    }
+    .share-project-name span {
+      display: block;
+      margin-bottom: .35rem;
+      color: var(--text-muted, #94a3b8);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .share-project-name strong {
+      display: block;
+      color: var(--text-main, #e5e7eb);
+      font-size: 1.05rem;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
     .share-hero {
       position: relative;
       overflow: hidden;
@@ -289,7 +312,15 @@ function renderInputs(inputs) {
 function renderReport(deal) {
   const results = deal.results && typeof deal.results === "object" ? deal.results : {};
   const type = String(deal.type || "business");
-  const title = deal.title || (deal.meta && deal.meta.title) || "Business Analysis";
+  const meta = deal.meta && typeof deal.meta === "object" ? deal.meta : {};
+  const projectName = [
+    meta.title,
+    deal.title,
+    deal.clientName,
+    deal.projectName,
+    deal.inputs?.projectName
+  ].find((value) => typeof value === "string" && value.trim())?.trim() || "Untitled project";
+  const title = projectName === "Untitled project" ? "Business Analysis" : projectName;
   const profit = Number(results.profit) || 0;
   const status = results.status || results.decision;
   const recommendation = results.action || results.advice;
@@ -300,6 +331,11 @@ function renderReport(deal) {
 
   contentEl.innerHTML = `
     <div class="share-report">
+      <section class="share-project-name" aria-label="Project name">
+        <span>Project name</span>
+        <strong>${escapeHTML(projectName)}</strong>
+      </section>
+
       <section class="share-hero" aria-label="Financial summary">
         <p class="report-kicker">${escapeHTML(labelFor(type))} analysis</p>
         <p class="share-profit-label">Net profit</p>

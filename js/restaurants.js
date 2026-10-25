@@ -406,12 +406,12 @@
     });
 
     // Button Listeners
-    $("resetBtn")?.addEventListener("click", resetAll);
-    $("saveDealBtn")?.addEventListener("click", saveDeal);
-    $("shareBtn")?.addEventListener("click", shareDeal);
-    $("compareBtn")?.addEventListener("click", addToCompare);
-    $("exportCsvBtn")?.addEventListener("click", exportCSV);
-    $("exportReportBtn")?.addEventListener("click", exportReport);
+    window.ButtonLoading.bind($("resetBtn"), resetAll);
+    window.ButtonLoading.bind($("saveDealBtn"), saveDeal);
+    window.ButtonLoading.bind($("shareBtn"), shareDeal);
+    window.ButtonLoading.bind($("compareBtn"), addToCompare);
+    window.ButtonLoading.bind($("exportCsvBtn"), exportCSV);
+    window.ButtonLoading.bind($("exportReportBtn"), exportReport);
 
     // Load Edit Mode
     const compareScenario = window.DealCompare?.getEditingScenario("restaurant");

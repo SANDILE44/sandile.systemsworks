@@ -400,12 +400,12 @@
         debounceTimer = setTimeout(runConsulting, 300);
       }));
 
-    $("resetBtn")?.addEventListener("click", resetAll);
-    $("saveDealBtn")?.addEventListener("click", saveDeal);
-    $("exportCsvBtn")?.addEventListener("click", exportCSV);
-    $("exportReportBtn")?.addEventListener("click", exportReport);
-    $("shareBtn")?.addEventListener("click", shareDeal);
-    $("compareBtn")?.addEventListener("click", addToCompare);
+    window.ButtonLoading.bind($("resetBtn"), resetAll);
+    window.ButtonLoading.bind($("saveDealBtn"), saveDeal);
+    window.ButtonLoading.bind($("exportCsvBtn"), exportCSV);
+    window.ButtonLoading.bind($("exportReportBtn"), exportReport);
+    window.ButtonLoading.bind($("shareBtn"), shareDeal);
+    window.ButtonLoading.bind($("compareBtn"), addToCompare);
 
     // Handle Edit Mode
     const compareScenario = window.DealCompare?.getEditingScenario("consulting");

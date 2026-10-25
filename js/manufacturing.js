@@ -419,12 +419,12 @@
       });
     });
 
-    $("resetBtn")?.addEventListener("click", resetAll);
-    $("saveDealBtn")?.addEventListener("click", saveDeal);
-    $("shareBtn")?.addEventListener("click", shareDeal);
-    $("compareBtn")?.addEventListener("click", addToCompare);
-    $("exportCsvBtn")?.addEventListener("click", exportManufacturingCSV);
-    $("exportReportBtn")?.addEventListener("click", exportManufacturingReport);
+    window.ButtonLoading.bind($("resetBtn"), resetAll);
+    window.ButtonLoading.bind($("saveDealBtn"), saveDeal);
+    window.ButtonLoading.bind($("shareBtn"), shareDeal);
+    window.ButtonLoading.bind($("compareBtn"), addToCompare);
+    window.ButtonLoading.bind($("exportCsvBtn"), exportManufacturingCSV);
+    window.ButtonLoading.bind($("exportReportBtn"), exportManufacturingReport);
 
     hydrateEdit();
     runManufacturing();

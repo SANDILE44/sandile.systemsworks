@@ -364,40 +364,70 @@
       const removeButton = event.target.closest("[data-remove]");
 
       if (editButton) {
-        const scenario = getScenario(editButton.dataset.edit);
-        if (scenario) {
-          window.location.href = `${calculatorPages[scenario.type]}?compareScenario=${encodeURIComponent(scenario.id)}`;
-        }
+        window.ButtonLoading.run(editButton, () => {
+          const scenario = getScenario(editButton.dataset.edit);
+          if (scenario) {
+            window.location.href = `${calculatorPages[scenario.type]}?compareScenario=${encodeURIComponent(scenario.id)}`;
+          }
+        }).catch((error) => {
+          console.error("Could not open comparison scenario:", error);
+          alert("This scenario could not be opened. Please try again.");
+        });
       }
 
       if (duplicateButton) {
-        const scenarios = readScenarios();
-        const original = scenarios.find((item) => item.id === duplicateButton.dataset.duplicate);
-        if (!original) return;
-        if (scenarios.length >= MAX_SCENARIOS) {
-          alert("You can compare up to three scenarios. Remove one before duplicating.");
-          return;
-        }
-        scenarios.push({
-          ...original,
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-          name: `${original.name} (Copy)`,
-          inputs: { ...original.inputs },
-          results: { ...original.results },
-          createdAt: new Date().toISOString()
+        window.ButtonLoading.run(duplicateButton, async () => {
+          const scenarios = readScenarios();
+          const original = scenarios.find((item) => item.id === duplicateButton.dataset.duplicate);
+          if (!original) return;
+          if (scenarios.length >= MAX_SCENARIOS) {
+            alert("You can compare up to three scenarios. Remove one before duplicating.");
+            return;
+          }
+          scenarios.push({
+            ...original,
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+            name: `${original.name} (Copy)`,
+            inputs: { ...original.inputs },
+            results: { ...original.results },
+            createdAt: new Date().toISOString()
+          });
+          if (writeScenarios(scenarios)) {
+            await new Promise((resolve) => setTimeout(resolve, 350));
+            render();
+          }
+        }).catch((error) => {
+          console.error("Could not duplicate comparison scenario:", error);
+          alert("This scenario could not be duplicated. Please try again.");
         });
-        if (writeScenarios(scenarios)) render();
       }
 
       if (removeButton) {
-        const scenarios = readScenarios().filter((item) => item.id !== removeButton.dataset.remove);
-        if (writeScenarios(scenarios)) render();
+        window.ButtonLoading.run(removeButton, async () => {
+          const scenarios = readScenarios().filter((item) => item.id !== removeButton.dataset.remove);
+          if (writeScenarios(scenarios)) {
+            await new Promise((resolve) => setTimeout(resolve, 350));
+            render();
+          }
+        }).catch((error) => {
+          console.error("Could not remove comparison scenario:", error);
+          alert("This scenario could not be removed. Please try again.");
+        });
       }
     });
 
-    document.getElementById("clear-comparison")?.addEventListener("click", () => {
+    document.getElementById("clear-comparison")?.addEventListener("click", (event) => {
       if (!confirm("Remove all scenarios from this comparison?")) return;
-      if (writeScenarios([])) render();
+      const button = event.currentTarget;
+      window.ButtonLoading.run(button, async () => {
+        if (writeScenarios([])) {
+          await new Promise((resolve) => setTimeout(resolve, 350));
+          render();
+        }
+      }).catch((error) => {
+        console.error("Could not clear comparison:", error);
+        alert("The comparison could not be cleared. Please try again.");
+      });
     });
 
     render();
