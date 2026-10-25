@@ -6,6 +6,19 @@
   let latestData = null;
   let latestInputs = null;
 
+  function getProjectName() {
+    return $("restaurant-project-name")?.value.trim() || "Restaurant project";
+  }
+
+  function setMetricColor(element, value) {
+    if (!element) return;
+    element.classList.remove("positive", "negative", "caution");
+    const number = Number(value);
+    element.classList.add(!Number.isFinite(number) || number === 0
+      ? "caution"
+      : number > 0 ? "positive" : "negative");
+  }
+
   /* ================= FORMATTERS ================= */
   const money = (v) =>
     (Number(v) || 0).toLocaleString(undefined, {
@@ -69,7 +82,11 @@
     const data = await api("/api/calculators/restaurant/operations", "POST", inputs);
     if (!data) return;
 
-    latestData = data;
+    const costs = Number(data.totalCosts) || 0;
+    const roi = data.roi !== null && data.roi !== undefined && data.roi !== "" && Number.isFinite(Number(data.roi))
+      ? Number(data.roi)
+      : costs === 0 ? 0 : (Number(data.profit) || 0) / costs * 100;
+    latestData = { ...data, roi };
     latestInputs = { ...inputs };
 
     // UI Updates
@@ -79,6 +96,7 @@
     $("totalCosts").textContent = money(data.totalCosts);
     $("profit").textContent = money(data.profit);
     $("margin").textContent = percent(data.margin);
+    $("roi").textContent = percent(roi);
     $("breakeven").textContent = data.breakevenCovers ?? 0;
     $("profitCover").textContent = money(data.profitPerCover);
     $("monthly").textContent = money(data.monthlyProfit);
@@ -96,8 +114,9 @@
       data.riskLevel === "High" ? "loss" : 
       data.riskLevel === "Medium" ? "neutral" : "profit";
 
-    $("profit").className = `output-value ${data.profit >= 0 ? "profit-positive" : "profit-negative"}`;
-    $("margin").className = `output-value ${data.margin < 10 ? "profit-negative" : data.margin < 20 ? "margin-medium" : "margin-strong"}`;
+    setMetricColor($("profit"), data.profit);
+    setMetricColor($("margin"), data.margin);
+    setMetricColor($("roi"), roi);
 
     renderInsights(data.insights);
   }
@@ -143,7 +162,7 @@
     latestInputs = null;
     [
       "dailyCovers","revenue","foodCost","totalCosts","ratio",
-      "profit","margin","profitCover","monthly","annual","breakeven"
+      "profit","margin","roi","profitCover","monthly","annual","breakeven"
     ].forEach(id => {
       if ($(id)) {$(id).textContent = "—";
         $(id).className = "output-value";
@@ -159,7 +178,7 @@
     if (!latestData) return alert("Run calculation first");
     
     const editId = localStorage.getItem("editDealId");
-    const clientNameValue = $("restaurant-project-name")?.value || "Untitled Project";
+    const clientNameValue = getProjectName();
     const payload = {
       type: "restaurant",
       clientName: clientNameValue,
@@ -167,6 +186,7 @@
       results: {
         profit: latestData.profit,
         margin: latestData.margin,
+        roi: latestData.roi,
         monthlyRevenue: latestData.monthlyRevenue
       }
     };
@@ -188,7 +208,7 @@
     if (!latestData) return alert("Run calculation first");
 
     const token = localStorage.getItem("token");
-    const projectName = $("restaurant-project-name")?.value || "Restaurant Operations Analysis";
+    const projectName = getProjectName();
 
     // 1. Construct the payload to match the backend SharedDealSchema
     const payload = {
@@ -198,7 +218,7 @@
       results: {
         profit: latestData.profit,
         margin: latestData.margin,
-        roi: latestData.margin,
+        roi: latestData.roi,
         status: latestData.decision,
         action: latestData.advice,
         dailyCovers: latestData.dailyCovers,
@@ -266,7 +286,7 @@
     if (!latestData) return alert("Run calculation first.");
     const saved = window.DealCompare?.addCurrentScenario({
       type: "restaurant",
-      name: $("restaurant-project-name")?.value || "Restaurant scenario",
+      name: getProjectName(),
       inputs: getInputs(),
       calculatedInputs: latestInputs,
       results: latestData
@@ -282,6 +302,7 @@
       ["Monthly Revenue", latestData.monthlyRevenue],
       ["Profit", latestData.profit],
       ["Margin", latestData.margin],
+      ["ROI", latestData.roi],
       ["Breakeven Covers", latestData.breakevenCovers]
     ];
     const csv = rows.map(r => r.join(",")).join("\n");
@@ -297,7 +318,7 @@
   async function exportReport() {
     if (!latestData) return alert("Run calculation first");
 
-    const projectName = $("restaurant-project-name")?.value.trim() || "Restaurant Analysis";
+    const projectName = getProjectName();
     const dateStr = new Date().toLocaleDateString('en-ZA', {
       year: 'numeric',
       month: 'long',
@@ -362,6 +383,7 @@
       ["Total costs", money(d.totalCosts)],
       ["Profit", money(d.profit)],
       ["Margin", percent(d.margin)],
+      ["ROI", percent(d.roi)],
       ["Break-even covers", d.breakevenCovers ?? 0],
       ["Profit per cover", money(d.profitPerCover)],
       ["Monthly profit", money(d.monthlyProfit)],

@@ -1068,7 +1068,7 @@ h1 {
 
 .deal-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.8rem;
 }
 
@@ -1098,6 +1098,13 @@ h1 {
 
 .deal-profit.negative { color: #ef4444; }
 .deal-profit.positive { color: #22c55e; }
+.deal-grid .positive { color: #22c55e; }
+.deal-grid .negative { color: #ef4444; }
+.deal-grid .caution { color: #f59e0b; }
+
+.output-value.positive { color: #22c55e; }
+.output-value.negative { color: #ef4444; }
+.output-value.caution { color: #f59e0b; }
 
 .no-search-results,
 .saved-deals-error {
@@ -1241,6 +1248,16 @@ h1 {
   align-items: center;
   z-index: 9999;
   flex-direction: column;
+  padding: 1rem;
+  text-align: center;
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 /* The spinning ring */

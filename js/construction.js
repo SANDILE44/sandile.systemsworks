@@ -7,6 +7,10 @@
   let latestData = null;
   let latestInputs = null;
 
+  function getProjectName() {
+    return $("client-name-input")?.value.trim() || "Construction project";
+  }
+
   /* ================= FORMATTERS ================= */
   const money = (v) =>
     (Number(v) || 0).toLocaleString(undefined, {
@@ -36,7 +40,7 @@
     if (!latestData) return alert("Run the engine first to calculate project data.");
     const saved = window.DealCompare?.addCurrentScenario({
       type: "construction",
-      name: $("client-name-input")?.value || "Construction project",
+      name: getProjectName(),
       inputs: getInputs(),
       calculatedInputs: latestInputs,
       results: latestData
@@ -145,8 +149,11 @@
       roiEl.textContent = percent(d.roi);
 
       // Apply color logic based on the riskLevel returned by your API
-      applyMetricColoring(marginEl, d.riskLevel);
-      applyMetricColoring(roiEl, d.riskLevel);
+      applyMetricColoring($("const-profit"), d.profit);
+      applyMetricColoring(marginEl, d.margin);
+      applyMetricColoring(roiEl, d.roi);
+      applyMetricColoring($("const-monthly-profit"), d.monthlyProfit);
+      applyMetricColoring($("const-annual-profit"), d.annualProfit);
 
       // 3. Inject Decision Status
       const statusEl = $("decision-status");
@@ -165,15 +172,13 @@
   }
 
   /* ================= HELPER: DYNAMIC COLORING ================= */
-  function applyMetricColoring(el, riskLevel) {
+  function applyMetricColoring(el, value) {
     if (!el) return;
-    // Reset existing classes
     el.classList.remove("positive", "caution", "negative");
-    
-    // Assign class based on risk
-    if (riskLevel === "High") el.classList.add("negative");
-    else if (riskLevel === "Medium") el.classList.add("caution");
-    else el.classList.add("positive");
+    const number = Number(value);
+    el.classList.add(!Number.isFinite(number) || number === 0
+      ? "caution"
+      : number > 0 ? "positive" : "negative");
   }
 
 
@@ -231,7 +236,7 @@ async function saveDeal(e) {
 
   const token = localStorage.getItem("token");
   let editId = localStorage.getItem("editDealId");
-  const clientNameValue = $("client-name-input")?.value || "Untitled Project";
+  const clientNameValue = getProjectName();
 
   const payload = {
     type: "construction",
@@ -240,6 +245,7 @@ async function saveDeal(e) {
     results: {
       profit: latestData.profit,
       margin: latestData.margin,
+      roi: latestData.roi,
       revenue: latestData.value || latestData.revenue || getInputs().value,
       status: latestData.decision,
       riskLevel: latestData.riskLevel
@@ -350,7 +356,10 @@ async function saveDeal(e) {
       "const-annual-profit"
     ].forEach(id => {
       const el = $(id);
-      if (el) el.textContent = "—";
+      if (el) {
+        el.textContent = "—";
+        el.classList.remove("positive", "caution", "negative");
+      }
     });
   }
 
@@ -359,7 +368,7 @@ async function saveDeal(e) {
     if (!latestData) return alert("Run the engine first to generate data.");
 
     const inputs = getInputs();
-    const projectName = $("client-name-input")?.value || "Unnamed_Project";
+    const projectName = getProjectName();
 
     const rows = [
       ["Category", "Label", "Value"],
@@ -395,7 +404,7 @@ async function saveDeal(e) {
   async function exportReport() {
     if (!latestData) return alert("Run the engine first to generate data.");
 
-    const projectName = $("client-name-input")?.value || "Standard Construction Project";
+    const projectName = getProjectName();
     const dateStr = new Date().toLocaleDateString('en-ZA', {
       year: 'numeric',
       month: 'long',
@@ -486,7 +495,7 @@ async function saveDeal(e) {
     if (!latestData) return alert("Run the engine first to generate data.");
 
     const token = localStorage.getItem("token");
-    const projectName = $("client-name-input")?.value || "Standard Construction Project";
+    const projectName = getProjectName();
     
     const payload = {
       shareId: "share_" + Math.random().toString(36).substring(2, 9), 

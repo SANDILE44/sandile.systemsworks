@@ -6,6 +6,10 @@
   let latestData = null;
   let latestInputs = null;
 
+  function getProjectName() {
+    return $("mfg-project-name")?.value.trim() || "Manufacturing project";
+  }
+
   /* ================= FORMATTERS ================= */
   const money = (v) =>
     (Number(v) || 0).toLocaleString(undefined, {
@@ -37,7 +41,7 @@
     if (!latestData) return alert("Run calculation first.");
     const saved = window.DealCompare?.addCurrentScenario({
       type: "manufacturing",
-      name: $("mfg-project-name")?.value || "Manufacturing scenario",
+      name: getProjectName(),
       inputs: getInputs(),
       calculatedInputs: latestInputs,
       results: latestData
@@ -50,6 +54,7 @@
     const i = getInputs();
 
     if (i.units <= 0 || i.price <= 0) {
+      latestData = null;
       latestInputs = null;
       renderEmpty();
       return;
@@ -118,6 +123,8 @@
     $("margin").textContent = percent(d.margin);
     $("roi").textContent = percent(d.roi);
     $("breakeven").textContent = d.breakEvenUnits;
+    [[$("profit"), d.profit], [$("margin"), d.margin], [$("roi"), d.roi]]
+      .forEach(([element, value]) => setMetricColor(element, value));
 
     const status = $("status");
     status.textContent = d.status;
@@ -139,9 +146,23 @@
     }
   }
 
+  function setMetricColor(element, value) {
+    if (!element) return;
+    element.classList.remove("positive", "negative", "caution");
+    const number = Number(value);
+    element.classList.add(!Number.isFinite(number) || number === 0
+      ? "caution"
+      : number > 0 ? "positive" : "negative");
+  }
+
   function renderEmpty() {
     ["revenue","totalCosts","profit","costPerUnit","profitPerUnit","margin","roi","breakeven"]
-      .forEach(id => $(id) && ($(id).textContent = "—"));
+      .forEach(id => {
+        const element = $(id);
+        if (!element) return;
+        element.textContent = "—";
+        element.classList.remove("positive", "negative", "caution");
+      });
     $("status").textContent = "—";
     $("decisionAdvice").textContent = "";
     if ($("stepsContainer")) $("stepsContainer").innerHTML = "";
@@ -159,7 +180,7 @@
   async function saveDeal() {
     if (!latestData) return alert("Run calculation first");
     const token = localStorage.getItem("token");
-    const clientNameValue = $("mfg-project-name")?.value || "Untitled Project";
+    const clientNameValue = getProjectName();
     const payload = {
       type: "manufacturing",
       clientName: clientNameValue,
@@ -183,7 +204,7 @@
     if (!latestData) return alert("Run calculation first");
 
     const token = localStorage.getItem("token");
-    const projectName = $("mfg-project-name")?.value || "Manufacturing Profitability Analysis";
+    const projectName = getProjectName();
 
     // 1. Construct the payload to match the backend SharedDealSchema
     const payload = {
@@ -283,7 +304,7 @@
   async function exportManufacturingReport() {
     if (!latestData) return alert("Run calculation first");
 
-    const projectName = $("mfg-project-name")?.value.trim() || "Manufacturing Analysis";
+    const projectName = getProjectName();
     const dateStr = new Date().toLocaleDateString('en-ZA', {
       year: 'numeric',
       month: 'long',

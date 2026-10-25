@@ -18,7 +18,12 @@
           calculatorPages[scenario.type] &&
           scenario.inputs &&
           scenario.results
-        ).slice(0, MAX_SCENARIOS)
+        ).slice(0, MAX_SCENARIOS).map((scenario) => ({
+          ...scenario,
+          name: typeof scenario.name === "string" && scenario.name.trim()
+            ? scenario.name.trim()
+            : `${labelsForType(scenario.type)} project`
+        }))
         : [];
     } catch (error) {
       console.error("Could not read comparison scenarios:", error);
@@ -74,6 +79,9 @@
       alert("Your latest input changes are still being calculated. Please wait, then add this scenario.");
       return false;
     }
+    const projectName = typeof name === "string" && name.trim()
+      ? name.trim()
+      : `${labelsForType(type)} project`;
 
     const scenarios = readScenarios();
     const editId = new URLSearchParams(window.location.search).get("compareScenario");
@@ -89,7 +97,7 @@
     if (editingIndex >= 0) {
       scenarios[editingIndex] = {
         ...scenarios[editingIndex],
-        name: name.trim() || scenarios[editingIndex].name,
+        name: projectName || scenarios[editingIndex].name,
         inputs,
         results,
         updatedAt: new Date().toISOString()
@@ -108,7 +116,7 @@
       scenarios.push({
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         type,
-        name: name.trim() || `${type[0].toUpperCase()}${type.slice(1)} scenario`,
+        name: projectName,
         inputs,
         results,
         createdAt: new Date().toISOString()
@@ -116,6 +124,15 @@
     }
 
     return writeScenarios(scenarios);
+  }
+
+  function labelsForType(type) {
+    return {
+      consulting: "Consulting",
+      construction: "Construction",
+      manufacturing: "Manufacturing",
+      restaurant: "Restaurant"
+    }[type] || "Business";
   }
 
   function initComparePage() {
@@ -203,6 +220,7 @@
         ["monthlyRevenue", "Monthly revenue", "money"],
         ["totalCosts", "Total costs", "money"],
         ["margin", "Profit margin", "percent"],
+        ["roi", "ROI", "percent"],
         ["dailyCovers", "Daily covers", "number"],
         ["breakevenCovers", "Break-even covers", "number"],
         ["foodCost", "Food cost", "money"],
@@ -236,6 +254,13 @@
       if (format === "money") return `R ${formatted}`;
       if (format === "percent") return `${formatted}%`;
       return formatted;
+    };
+
+    const metricClass = (key, value) => {
+      if (!["profit", "margin", "roi"].includes(key)) return "";
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "";
+      return number > 0 ? "metric-positive" : number < 0 ? "metric-negative" : "metric-caution";
     };
 
     function render() {
@@ -287,7 +312,7 @@
                   <tr class="${key === "profit" ? "highlight-row" : ""}">
                     <th scope="row">${escapeHTML(label)}</th>
                     ${scenarios.map((scenario) => `
-                      <td>${formatValue(scenario.results[key], format)}</td>
+                      <td class="${metricClass(key, scenario.results[key])}">${formatValue(scenario.results[key], format)}</td>
                     `).join("")}
                   </tr>
                 `).join("")}
@@ -354,7 +379,7 @@
       const scenarios = readScenarios();
       const scenario = scenarios.find((item) => item.id === input.dataset.rename);
       if (!scenario) return;
-      scenario.name = input.value.trim() || "Untitled scenario";
+      scenario.name = input.value.trim() || `${labelsForType(scenario.type)} project`;
       if (writeScenarios(scenarios)) render();
     });
 

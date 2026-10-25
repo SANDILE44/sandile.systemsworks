@@ -7,6 +7,19 @@
   let latestData = null;
   let latestInputs = null;
 
+  function getProjectName() {
+    return $("consult-project-name")?.value.trim() || "Consulting project";
+  }
+
+  function setMetricColor(element, value) {
+    if (!element) return;
+    element.classList.remove("positive", "negative", "caution");
+    const number = Number(value);
+    element.classList.add(!Number.isFinite(number) || number === 0
+      ? "caution"
+      : number > 0 ? "positive" : "negative");
+  }
+
   /* ================= FORMATTERS ================= */
   const money = (v) =>
     (Number(v) || 0).toLocaleString(undefined, {
@@ -103,10 +116,9 @@
       : "profit";
 
     /* ================= COLORS ================= */
-    const profitEl = $("consult-profit");
-    if (profitEl) {
-      profitEl.style.color = data.profit >= 0 ? "#22c55e" : "#ef4444";
-    }
+    setMetricColor($("consult-profit"), data.profit);
+    setMetricColor($("consult-margin"), data.margin);
+    setMetricColor($("consult-roi"), data.roi);
 
     /* ================= STEPS ================= */
     renderSteps(data.steps);
@@ -159,7 +171,7 @@
   async function exportReport() {
     if (!latestData) return alert("Run calculator first");
 
-    const projectName = $("consult-project-name")?.value.trim() || "Consulting Project Analysis";
+    const projectName = getProjectName();
     const dateStr = new Date().toLocaleDateString('en-ZA', {
       year: 'numeric',
       month: 'long',
@@ -258,7 +270,7 @@
     if (!latestData) return alert("Run calculator first");
 
     const token = localStorage.getItem("token");
-    const projectName = $("consult-project-name")?.value || "Consulting Project Analysis";
+    const projectName = getProjectName();
     
     // 1. Construct the payload to match the backend SharedDealSchema
     const payload = {
@@ -335,7 +347,7 @@
     if (!latestData) return alert("Run the calculator first.");
     const saved = window.DealCompare?.addCurrentScenario({
       type: "consulting",
-      name: $("consult-project-name")?.value || "Consulting project",
+      name: getProjectName(),
       inputs: getInputs(),
       calculatedInputs: latestInputs,
       results: latestData
@@ -348,7 +360,7 @@
     if (!latestData) return alert("Run calculator first");
 
     const editId = localStorage.getItem("editDealId");
-    const clientNameValue = $("consult-project-name")?.value || "Untitled Project";
+    const clientNameValue = getProjectName();
     const payload = {
       type: "consulting",
       clientName: clientNameValue,
@@ -356,6 +368,7 @@
       results: {
         profit: latestData.profit,
         margin: latestData.margin,
+        roi: latestData.roi,
         revenue: latestData.totalRevenue
       }
     };
@@ -389,7 +402,12 @@
       "consult-cost-hour","consult-costs",
       "consult-profit","consult-profit-hour",
       "consult-margin","consult-roi","consult-breakeven"
-    ].forEach(id => { if($(id)) $(id).textContent = "—"; });
+    ].forEach(id => {
+      const element = $(id);
+      if (!element) return;
+      element.textContent = "—";
+      element.classList.remove("positive", "negative", "caution");
+    });
   }
 
   /* ================= INIT ================= */

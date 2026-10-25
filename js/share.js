@@ -125,6 +125,8 @@ function addShareStyles() {
       overflow-wrap: anywhere;
     }
     .share-profit.negative { color: #fda4af; }
+    .share-profit.positive { color: #22c55e; }
+    .share-profit.caution { color: #fcd34d; }
     .share-metrics, .share-details, .share-inputs {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -153,6 +155,9 @@ function addShareStyles() {
       line-height: 1.35;
       overflow-wrap: anywhere;
     }
+    .share-metric strong.positive { color: #22c55e; }
+    .share-metric strong.negative { color: #ef4444; }
+    .share-metric strong.caution { color: #f59e0b; }
     .share-metric:nth-child(1) { border-top: 2px solid #22c55e; }
     .share-metric:nth-child(2) { border-top: 2px solid var(--accent, #00b4d8); }
     .share-metric:nth-child(3) { border-top: 2px solid #0096c7; }
@@ -315,12 +320,18 @@ function renderReport(deal) {
   const meta = deal.meta && typeof deal.meta === "object" ? deal.meta : {};
   const projectName = [
     meta.title,
+    meta.projectName,
     deal.title,
     deal.clientName,
+    deal.client_name,
+    deal.name,
     deal.projectName,
-    deal.inputs?.projectName
-  ].find((value) => typeof value === "string" && value.trim())?.trim() || "Untitled project";
-  const title = projectName === "Untitled project" ? "Business Analysis" : projectName;
+    deal.inputs?.projectName,
+    deal.inputs?.project_name
+  ].find((value) => typeof value === "string" && value.trim())?.trim() || `${labelFor(type)} project`;
+  const marginClass = metricClassFor(results.margin);
+  const roiClass = metricClassFor(results.roi);
+  const title = projectName;
   const profit = Number(results.profit) || 0;
   const status = results.status || results.decision;
   const recommendation = results.action || results.advice;
@@ -339,17 +350,17 @@ function renderReport(deal) {
       <section class="share-hero" aria-label="Financial summary">
         <p class="report-kicker">${escapeHTML(labelFor(type))} analysis</p>
         <p class="share-profit-label">Net profit</p>
-        <p class="share-profit${profit < 0 ? " negative" : ""}">R ${formatNum(profit)}</p>
+        <p class="share-profit ${metricClassFor(profit)}">R ${formatNum(profit)}</p>
       </section>
 
       <div class="share-metrics" aria-label="Key performance indicators">
         <div class="share-metric">
           <span>Profit margin</span>
-          <strong>${percent(results.margin)}</strong>
+          <strong class="${marginClass}">${percent(results.margin)}</strong>
         </div>
         <div class="share-metric">
           <span>Return on investment</span>
-          <strong>${percent(results.roi)}</strong>
+          <strong class="${roiClass}">${percent(results.roi)}</strong>
         </div>
         <div class="share-metric">
           <span>Project status</span>
@@ -375,6 +386,12 @@ function renderReport(deal) {
       <p class="share-footer">Shared business analysis · Sandile SystemsWorks</p>
     </div>
   `;
+}
+
+function metricClassFor(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "caution";
+  return number > 0 ? "positive" : number < 0 ? "negative" : "caution";
 }
 
 async function loadShare() {

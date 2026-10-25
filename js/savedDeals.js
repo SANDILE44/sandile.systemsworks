@@ -61,6 +61,27 @@
     });
 
   const percent = (value) => `${(Number(value) || 0).toFixed(2)}%`;
+  const metricClass = (value) => {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number === 0) return "caution";
+    return number > 0 ? "positive" : "negative";
+  };
+
+  function getProjectName(deal) {
+    const candidates = [
+      deal.clientName,
+      deal.name,
+      deal.projectName,
+      deal.title,
+      deal.client_name,
+      deal.meta?.title,
+      deal.meta?.projectName,
+      deal.inputs?.projectName,
+      deal.inputs?.project_name
+    ];
+    return candidates.find((value) => typeof value === "string" && value.trim())?.trim()
+      || `${industry.label} project`;
+  }
 
   function formatDate(value) {
     if (!value) return "Date unavailable";
@@ -88,6 +109,7 @@
     return [
       deal.clientName,
       deal.name,
+      getProjectName(deal),
       deal.type,
       deal.createdAt,
       deal.results,
@@ -134,14 +156,16 @@
     empty.style.display = "none";
     container.innerHTML = visibleDeals.map((deal) => {
       const results = deal.results || {};
-      const name = deal.clientName || deal.name || "Untitled Project";
+      const name = getProjectName(deal);
       const margin = Number(results.margin) || 0;
-      const marginClass = margin > 20 ? "positive" : margin > 10 ? "caution" : "negative";
+      const profitClass = metricClass(results.profit);
+      const marginClass = metricClass(margin);
+      const roiClass = metricClass(results.roi);
       const revenue = getRevenue(deal);
       const status = results.status || results.decision || results.riskLevel;
 
       return `
-        <article class="deal-card ${marginClass}">
+        <article class="deal-card ${profitClass}">
           <div class="deal-header">
             <div class="deal-heading">
               <span class="deal-industry-icon"><i data-lucide="${industry.icon}" aria-hidden="true"></i></span>
@@ -156,11 +180,15 @@
             <div class="deal-grid">
               <div>
                 <span class="label">NET PROFIT</span>
-                <strong class="deal-profit ${Number(results.profit) < 0 ? "negative" : "positive"}">R ${money(results.profit)}</strong>
+                <strong class="deal-profit ${profitClass}">R ${money(results.profit)}</strong>
               </div>
               <div>
                 <span class="label">PROFIT MARGIN</span>
                 <strong class="${marginClass}">${percent(margin)}</strong>
+              </div>
+              <div>
+                <span class="label">ROI</span>
+                <strong class="${roiClass}">${results.roi === undefined || results.roi === null ? "—" : percent(results.roi)}</strong>
               </div>
             </div>
             <div class="deal-revenue">
