@@ -9,7 +9,13 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body>
+<body data-saved-deal-type="manufacturing">
+  <div id="loader" class="loader-overlay" style="display:none;">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p class="loader-text">Fetching Projects...</p>
+    </div>
+  </div>
   <div class="app-shell">
     <aside class="sidebar" id="app-sidebar">
       <div class="sidebar-top">
@@ -62,6 +68,13 @@
         <div class="page-header">
           <h1>Saved Manufacturing Deals</h1>
           <p>Review and manage your analyzed manufacturing projects.</p>
+          <div class="search-wrapper">
+            <div class="search-input-container">
+              <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+              <input id="searchInput" name="projectSearch" type="search" placeholder="Search by project, profit, revenue, or status..." autocomplete="off" aria-label="Search saved manufacturing projects" />
+            </div>
+            <div id="searchMeta" class="industry-meta" aria-live="polite">Showing all projects</div>
+          </div>
         </div>
 
         <div id="savedDealsContainer" class="deals-grid"></div>
@@ -80,7 +93,8 @@
   <script src="js/auth.js"></script>
   <script src="js/hamburger.js"></script>
   <script src="js/user-display.js"></script>
-  <script src="js/savedDealsManufacturing.js"></script>
+  <script src="js/button-loading.js"></script>
+  <script src="js/savedDeals.js"></script>
   <script>lucide.createIcons();</script>
 </body>
 

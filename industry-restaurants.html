@@ -141,11 +141,12 @@ RESTAURANT DECISION ENGINE UI
 
 <h3>Inputs</h3>
 
-<div class="input-group">
-  <label for="restaurant-project-name">Business name</label>
-  <input id="restaurant-project-name" type="text" maxlength="80" placeholder="e.g. The Garden Table" />
-</div>
-
+ <!-- PREMIUM ADDITION: Project/Client Name -->
+    <div class="input-group" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <label style="color: var(--accent); font-weight: bold; letter-spacing: 0.05em;">PROJECT / CLIENT NAME</label>
+      <input id="client-name-input" type="text" placeholder="e.g. Standard Bank Office Upgrade" style="border: 1px solid var(--accent); background: rgba(59, 130, 246, 0.05);" />
+    </div>
+    
 <div class="input-group">
   <label>Number of tables</label>
   <input id="tables" type="number" placeholder="Number of tables" />
@@ -320,6 +321,7 @@ RESTAURANT DECISION ENGINE UI
 <script src="js/api.js"></script>
 <script src="js/guard.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/button-loading.js"></script>
 <script src="js/compare.js"></script>
 <script src="js/restaurants.js"></script>
 <script src="js/hamburger.js"></script>
