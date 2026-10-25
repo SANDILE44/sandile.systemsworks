@@ -15,9 +15,7 @@
 
   const percent = (v) => {
     const n = Number(v) || 0;
-    // Handle both 0.15 and 15 formats
-    const val = Math.abs(n) <= 1 ? n * 100 : n;
-    return val.toFixed(2) + "%";
+    return n.toFixed(2) + "%";
   };
 
   /* ================= API UTILITY ================= */
