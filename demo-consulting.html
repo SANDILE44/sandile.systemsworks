@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulting Demo | Sandile SystemsWorks</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/calculators.css" />
+  <link rel="stylesheet" href="css/demo-screenshots.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { background:#020617; color:#e5e7eb; font-family:Arial,sans-serif; }
+    .demo-shell { max-width:1100px; margin:0 auto; padding:24px 18px 64px; }
+    .demo-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+    .demo-badge { display:inline-flex; align-items:center; gap:8px; background: rgba(0,180,216,0.08); border:1px solid rgba(0,180,216,0.25); color:#00b4d8; font-size:10px; font-weight:900; letter-spacing:0.25em; text-transform:uppercase; padding:10px 14px; border-radius:999px; }
+    .demo-badge svg { width:16px; height:16px; }
+    .output-value.demo-metric-positive { color:#22c55e; }
+    .output-value.demo-metric-negative { color:#ef4444; }
+    .demo-note { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#cbd5e1; padding:14px 18px; border-radius:12px; margin-bottom:22px; font-size:14px; line-height:1.6; }
+    .cta-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:18px; }
+    .primary-btn, .secondary-btn { display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border-radius:10px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; font-size:11px; text-decoration:none; transition:all 0.2s ease; }
+    .primary-btn { background:#00b4d8; color:#041019; }
+    .secondary-btn { border:1px solid rgba(255,255,255,0.12); color:#fff; background: rgba(255,255,255,0.02); }
+    .primary-btn:hover, .secondary-btn:hover { transform:translateY(-1px); }
+  </style>
+</head>
+<body>
+  <div class="demo-shell">
+    <div class="demo-header">
+      <div class="demo-badge"><i data-lucide="briefcase-business" class="w-4 h-4"></i> Consulting Demo</div>
+      <a href="index.html" class="secondary-btn">Back to home</a>
+    </div>
+
+    <div class="demo-note">
+      This is a limited preview of the consulting calculator. It shows how project pricing, hours, and labor affect profitability without allowing any full tool actions.
+    </div>
+
+    <div class="calculator-container">
+      <div class="calculator-grid">
+        <div class="input-section">
+          <h3>Sample inputs</h3>
+
+          <div class="input-group">
+            <label>Total project hours</label>
+            <input id="hours" type="number" value="420" />
+          </div>
+
+          <div class="input-group">
+            <label>Hourly rate (R)</label>
+            <input id="rate" type="number" value="1200" />
+          </div>
+
+          <div class="input-group">
+            <label>Project expenses (R)</label>
+            <input id="expenses" type="number" value="35000" />
+          </div>
+
+          <div class="input-group">
+            <label>Labor costs (R)</label>
+            <input id="labor" type="number" value="180000" />
+          </div>
+
+          <div class="input-group">
+            <label>Fixed costs (R)</label>
+            <input id="fixed" type="number" value="25000" />
+          </div>
+
+          <div class="input-group">
+            <label>Discount (%)</label>
+            <input id="discount" type="number" value="5" />
+          </div>
+        </div>
+
+        <div class="output-section">
+          <h3>Preview results</h3>
+          <div id="status" class="profit" style="font-size:1.1rem; font-weight:900; text-transform:uppercase; letter-spacing:0.08em;">PROFIT</div>
+          <div id="decisionAdvice" style="margin-top:12px; color:#cbd5e1; line-height:1.6;">The project is commercially sound and can support a healthy margin if hours remain controlled.</div>
+
+          <div class="output-group" style="margin-top:18px;">
+            <div class="output-label">Revenue</div>
+            <div class="output-value" id="revenue">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Total costs</div>
+            <div class="output-value" id="costs">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Profit</div>
+            <div class="output-value" id="profit">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Margin</div>
+            <div class="output-value" id="margin">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Break-even hours</div>
+            <div class="output-value" id="breakeven">—</div>
+          </div>
+
+          <div class="cta-row">
+            <a href="signup.html" class="primary-btn">Unlock full tool</a>
+            <a href="product.html" class="secondary-btn">Learn more</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="screenshot-section" aria-labelledby="screenshot-heading">
+    <div class="screenshot-heading">
+      <h2 id="screenshot-heading">Explore the full consulting tool</h2>
+      <p>These screenshots show the wider product experience beyond this limited calculator preview.</p>
+    </div>
+    <div class="screenshot-grid">
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/consulting-tool.png" alt="Consulting profitability tool screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Consulting tool screenshot</strong><code>images/demo-screenshots/consulting-tool.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Consulting tool</h3><p>Project hours, pricing, and decision results.</p></figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/consulting-saved-deals.png" alt="Consulting saved deals screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Saved deals screenshot</strong><code>images/demo-screenshots/consulting-saved-deals.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Saved deals</h3><p>Saved consulting projects for later review.</p></figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/consulting-shared-deal.png" alt="Consulting shared deal screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Shared deal screenshot</strong><code>images/demo-screenshots/consulting-shared-deal.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Shared deal</h3><p>A read-only view for sharing a consulting analysis.</p></figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/consulting-compare.png" alt="Consulting comparison page screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Comparison screenshot</strong><code>images/demo-screenshots/consulting-compare.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Compare deals</h3><p>Compare consulting projects side by side.</p></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <script>
+    const money = (value) => Number(value || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const percent = (value) => `${Number(value || 0).toFixed(2)}%`;
+
+    function getInputs() {
+      return {
+        hours: Number(document.getElementById('hours').value || 0),
+        rate: Number(document.getElementById('rate').value || 0),
+        expenses: Number(document.getElementById('expenses').value || 0),
+        labor: Number(document.getElementById('labor').value || 0),
+        fixed: Number(document.getElementById('fixed').value || 0),
+        discount: Number(document.getElementById('discount').value || 0)
+      };
+    }
+
+    function runDemo() {
+      const i = getInputs();
+      const baseRevenue = i.hours * i.rate;
+      const discountValue = baseRevenue * (i.discount / 100);
+      const revenue = baseRevenue - discountValue;
+      const totalCosts = i.expenses + i.labor + i.fixed;
+      const profit = revenue - totalCosts;
+      const margin = revenue ? (profit / revenue) * 100 : 0;
+      const breakEvenHours = i.rate > 0 ? (totalCosts / i.rate) : 0;
+
+      document.getElementById('revenue').textContent = 'R ' + money(revenue);
+      document.getElementById('costs').textContent = 'R ' + money(totalCosts);
+      document.getElementById('profit').textContent = 'R ' + money(profit);
+      document.getElementById('margin').textContent = percent(margin);
+      document.getElementById('breakeven').textContent = Number(breakEvenHours).toFixed(1);
+
+      const metricClass = profit > 0 ? 'demo-metric-positive' : 'demo-metric-negative';
+      ['profit', 'margin'].forEach((id) => {
+        const metric = document.getElementById(id);
+        metric.classList.remove('demo-metric-positive', 'demo-metric-negative');
+        metric.classList.add(metricClass);
+      });
+
+      const statusEl = document.getElementById('status');
+      const adviceEl = document.getElementById('decisionAdvice');
+
+      if (profit <= 0) {
+        statusEl.textContent = 'LOSS';
+        statusEl.className = 'loss';
+        adviceEl.textContent = 'This project is not converting enough value. Raise the rate or reduce delivery cost before accepting.';
+      } else if (margin < 15) {
+        statusEl.textContent = 'RISK';
+        statusEl.className = 'neutral';
+        adviceEl.textContent = 'Good potential, but the margin is tight. Scope creep or overtime could quickly remove profitability.';
+      } else {
+        statusEl.textContent = 'PROFIT';
+        statusEl.className = 'profit';
+        adviceEl.textContent = 'The project is commercially sound and can support a healthy margin if hours remain controlled.';
+      }
+    }
+
+    document.querySelectorAll('input').forEach((input) => {
+      input.addEventListener('input', runDemo);
+    });
+
+    runDemo();
+    lucide.createIcons();
+  </script>
+  <script src="js/demo-screenshots.js"></script>
+</body>
+</html>

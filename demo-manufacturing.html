@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manufacturing Demo | Sandile SystemsWorks</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/calculators.css" />
+  <link rel="stylesheet" href="css/demo-screenshots.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      background: #020617;
+      color: #e5e7eb;
+      font-family: Arial, sans-serif;
+    }
+    .demo-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 64px;
+    }
+    .demo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 180, 216, 0.08);
+      border: 1px solid rgba(0, 180, 216, 0.25);
+      color: #00b4d8;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      border-radius: 999px;
+    }
+    .demo-badge svg {
+      width: 16px;
+      height: 16px;
+    }
+    .output-value.demo-metric-positive { color: #22c55e; }
+    .output-value.demo-metric-negative { color: #ef4444; }
+    .demo-note {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #cbd5e1;
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    .primary-btn,
+    .secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 11px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .primary-btn {
+      background: #00b4d8;
+      color: #041019;
+    }
+    .secondary-btn {
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #fff;
+      background: rgba(255,255,255,0.02);
+    }
+    .primary-btn:hover,
+    .secondary-btn:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-shell">
+    <div class="demo-header">
+      <div>
+        <div class="demo-badge"><i data-lucide="factory" class="w-4 h-4"></i> Manufacturing Demo</div>
+      </div>
+      <a href="index.html" class="secondary-btn">Back to home</a>
+    </div>
+
+    <div class="demo-note">
+      This is a limited preview of the manufacturing calculator. It demonstrates the logic and value of the tool, but it does not save, share, compare, or unlock the full product experience.
+    </div>
+
+    <div class="calculator-container">
+      <div class="calculator-grid">
+        <div class="input-section">
+          <h3>Sample inputs</h3>
+
+          <div class="input-group">
+            <label>Units produced</label>
+            <input id="units" type="number" value="1200" />
+          </div>
+
+          <div class="input-group">
+            <label>Selling price per unit</label>
+            <input id="price" type="number" value="240" />
+          </div>
+
+          <div class="input-group">
+            <label>Material cost per unit</label>
+            <input id="material" type="number" value="135" />
+          </div>
+
+          <div class="input-group">
+            <label>Labor cost (monthly)</label>
+            <input id="labor" type="number" value="42000" />
+          </div>
+
+          <div class="input-group">
+            <label>Fixed costs (monthly)</label>
+            <input id="fixed" type="number" value="27000" />
+          </div>
+
+          <div class="input-group">
+            <label>Operational costs (monthly)</label>
+            <input id="operational" type="number" value="15000" />
+          </div>
+        </div>
+
+        <div class="output-section">
+          <h3>Preview results</h3>
+          <div id="status" class="profit" style="font-size:1.1rem; font-weight:900; text-transform:uppercase; letter-spacing:0.08em;">PROFIT</div>
+          <div id="decisionAdvice" style="margin-top:12px; color:#cbd5e1; line-height:1.6;">Healthy operation. Focus on scaling production while monitoring material cost inflation.</div>
+
+          <div class="output-group" style="margin-top:18px;">
+            <div class="output-label">Revenue</div>
+            <div class="output-value" id="revenue">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Total costs</div>
+            <div class="output-value" id="totalCosts">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Profit</div>
+            <div class="output-value" id="profit">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Margin</div>
+            <div class="output-value" id="margin">—</div>
+          </div>
+          <div class="output-group">
+            <div class="output-label">Break-even units</div>
+            <div class="output-value" id="breakeven">—</div>
+          </div>
+
+          <div class="cta-row">
+            <a href="signup.html" class="primary-btn">Unlock full tool</a>
+            <a href="product.html" class="secondary-btn">Learn more</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="screenshot-section" aria-labelledby="screenshot-heading">
+    <div class="screenshot-heading">
+      <h2 id="screenshot-heading">Explore the full manufacturing tool</h2>
+      <p>These screenshots show the wider product experience beyond this limited calculator preview.</p>
+    </div>
+    <div class="screenshot-grid">
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/manufacturing-tool.png" alt="Manufacturing profitability tool screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Manufacturing tool screenshot</strong><code>images/demo-screenshots/manufacturing-tool.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Manufacturing tool</h3><p>Profitability inputs and decision results.</p></figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/manufacturing-saved-deals.png" alt="Manufacturing saved deals screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Saved deals screenshot</strong><code>images/demo-screenshots/manufacturing-saved-deals.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Saved deals</h3><p>Saved manufacturing scenarios for later review.</p></figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/manufacturing-shared-deal.png" alt="Manufacturing shared deal screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Shared deal screenshot</strong><code>images/demo-screenshots/manufacturing-shared-deal.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Shared deal</h3><p>A read-only view for sharing an analysis.</p></figcaption>
+      </figure>
+      <figure class="screenshot-card">
+        <div class="screenshot-frame">
+          <img class="screenshot-image" src="images/demo-screenshots/manufacturing-compare.png" alt="Manufacturing comparison page screenshot" loading="lazy" />
+          <div class="screenshot-placeholder"><strong>Comparison screenshot</strong><code>images/demo-screenshots/manufacturing-compare.png</code></div>
+        </div>
+        <figcaption class="screenshot-caption"><h3>Compare deals</h3><p>Compare manufacturing scenarios side by side.</p></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <script>
+    const money = (value) => Number(value || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const percent = (value) => `${Number(value || 0).toFixed(2)}%`;
+
+    function getInputs() {
+      return {
+        units: Number(document.getElementById('units').value || 0),
+        price: Number(document.getElementById('price').value || 0),
+        material: Number(document.getElementById('material').value || 0),
+        labor: Number(document.getElementById('labor').value || 0),
+        fixed: Number(document.getElementById('fixed').value || 0),
+        operational: Number(document.getElementById('operational').value || 0)
+      };
+    }
+
+    function runDemo() {
+      const i = getInputs();
+      if (i.units <= 0 || i.price <= 0) {
+        return;
+      }
+
+      const revenue = i.units * i.price;
+      const materialTotal = i.units * i.material;
+      const totalCosts = materialTotal + i.labor + i.fixed + i.operational;
+      const profit = revenue - totalCosts;
+      const margin = revenue ? (profit / revenue) * 100 : 0;
+      const breakEvenUnits = (i.price - i.material) > 0 ? Math.ceil((i.labor + i.fixed + i.operational) / (i.price - i.material)) : 0;
+
+      document.getElementById('revenue').textContent = 'R ' + money(revenue);
+      document.getElementById('totalCosts').textContent = 'R ' + money(totalCosts);
+      document.getElementById('profit').textContent = 'R ' + money(profit);
+      document.getElementById('margin').textContent = percent(margin);
+      document.getElementById('breakeven').textContent = breakEvenUnits;
+
+      const metricClass = profit > 0 ? 'demo-metric-positive' : 'demo-metric-negative';
+      ['profit', 'margin'].forEach((id) => {
+        const metric = document.getElementById(id);
+        metric.classList.remove('demo-metric-positive', 'demo-metric-negative');
+        metric.classList.add(metricClass);
+      });
+
+      const statusEl = document.getElementById('status');
+      const adviceEl = document.getElementById('decisionAdvice');
+
+      if (profit <= 0) {
+        statusEl.textContent = 'LOSS';
+        statusEl.className = 'loss';
+        adviceEl.textContent = 'This scenario is losing money. Reduce material cost or raise selling price before scaling further.';
+      } else if (margin < 15) {
+        statusEl.textContent = 'RISK';
+        statusEl.className = 'neutral';
+        adviceEl.textContent = 'Margins are thin. Small cost changes can destroy profitability if not monitored closely.';
+      } else {
+        statusEl.textContent = 'PROFIT';
+        statusEl.className = 'profit';
+        adviceEl.textContent = 'Healthy operation. Focus on scaling production while monitoring material cost inflation.';
+      }
+    }
+
+    document.querySelectorAll('input').forEach((input) => {
+      input.addEventListener('input', runDemo);
+    });
+
+    runDemo();
+    lucide.createIcons();
+  </script>
+  <script src="js/demo-screenshots.js"></script>
+</body>
+</html>
