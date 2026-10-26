@@ -148,12 +148,12 @@
       marginEl.textContent = percent(d.margin);
       roiEl.textContent = percent(d.roi);
 
-      // Apply color logic based on the riskLevel returned by your API
-      applyMetricColoring($("const-profit"), d.profit);
-      applyMetricColoring(marginEl, d.margin);
-      applyMetricColoring(roiEl, d.roi);
-      applyMetricColoring($("const-monthly-profit"), d.monthlyProfit);
-      applyMetricColoring($("const-annual-profit"), d.annualProfit);
+  // Apply color logic factoring in the risk level for percentages
+      applyMetricColoring($("const-profit"), d.profit, d.riskLevel, false);
+      applyMetricColoring(marginEl, d.margin, d.riskLevel, true);
+      applyMetricColoring(roiEl, d.roi, d.riskLevel, true);
+      applyMetricColoring($("const-monthly-profit"), d.monthlyProfit, d.riskLevel, false);
+      applyMetricColoring($("const-annual-profit"), d.annualProfit, d.riskLevel, false);
 
       // 3. Inject Decision Status
       const statusEl = $("decision-status");
@@ -171,17 +171,26 @@
     }
   }
 
-  /* ================= HELPER: DYNAMIC COLORING ================= */
-  function applyMetricColoring(el, value) {
+/* ================= HELPER: DYNAMIC COLORING (RISK-AWARE) ================= */
+  function applyMetricColoring(el, value, riskLevel = "Low", isPercentage = false) {
     if (!el) return;
     el.classList.remove("positive", "caution", "negative");
     const number = Number(value);
-    el.classList.add(!Number.isFinite(number) || number === 0
-      ? "caution"
-      : number > 0 ? "positive" : "negative");
+
+    if (!isFinite(number) || number === 0) {
+      el.classList.add("caution");
+      return;
+    }
+
+    // If it's a percentage metric (Margin/ROI) and the risk level is High/Medium, override to warning colors
+    if (isPercentage && (riskLevel === "High" || riskLevel === "Medium")) {
+      el.classList.add(riskLevel === "High" ? "negative" : "caution");
+      return;
+    }
+
+    // Standard raw value fallback
+    el.classList.add(number > 0 ? "positive" : "negative");
   }
-
-
   /* ================= INSIGHTS ================= */
   function renderInsights(insights) {
     const container = $("const-insights");
