@@ -11,7 +11,7 @@
     return $("client-name-input")?.value.trim() || "Construction project";
   }
 
-  /* ================= FORMATTERS ================= */
+/* ================= FORMATTERS ================= */
   const money = (v) =>
     (Number(v) || 0).toLocaleString(undefined, {
       minimumFractionDigits: 2,
@@ -19,11 +19,16 @@
     });
 
   const percent = (v) => {
-    const n = Number(v);
+    let n = Number(v);
     if (!isFinite(n)) return "0.00%";
+    
+    // Safeguard/Clamp margin percentage between logical business limits (-100% to +100%)
+    if (n < -100) n = -100;
+    if (n > 100) n = 100;
+
     return n.toFixed(2) + "%";
   };
-
+  
   /* ================= INPUTS ================= */
   function getInputs() {
     return {
