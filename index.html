@@ -281,7 +281,7 @@
     </nav>
 
 
- <!-- HERO SECTION WITH LIVE SIMULATOR PREVIEW -->
+    <!-- HERO SECTION WITH INTERACTIVE SIMULATOR -->
     <section class="relative pt-48 pb-32 animate-fade-in">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
@@ -327,7 +327,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                         <!-- Left: Input simulation sliders -->
-                        <div class="space-y-4 text-left">
+                        <div class="space-y-5 text-left">
                             <div>
                                 <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
                                     <span class="text-slate-400">Contract Tender Value</span>
@@ -335,7 +335,8 @@
                                 </div>
                                 <input type="range" min="500000" max="5000000" step="50000" value="1500000" 
                                     class="w-full accent-[#00b4d8] bg-white/10 rounded-lg appearance-none cursor-pointer h-1.5"
-                                    oninput="document.getElementById('val-display').innerText = 'R' + Number(this.value).toLocaleString()">
+                                    id="tender-slider"
+                                    oninput="updateSimulator()">
                             </div>
 
                             <div>
@@ -345,7 +346,8 @@
                                 </div>
                                 <input type="range" min="300000" max="4000000" step="25000" value="1120000" 
                                     class="w-full accent-[#00b4d8] bg-white/10 rounded-lg appearance-none cursor-pointer h-1.5"
-                                    oninput="document.getElementById('cost-display').innerText = 'R' + Number(this.value).toLocaleString()">
+                                    id="cost-slider"
+                                    oninput="updateSimulator()">
                             </div>
                         </div>
 
@@ -353,15 +355,15 @@
                         <div class="p-6 bg-white/[0.02] border border-white/5 rounded-lg grid grid-cols-2 gap-4 text-center">
                             <div class="p-4 bg-black/40 rounded">
                                 <span class="text-[9px] text-[#00b4d8] font-bold uppercase tracking-widest block mb-1">Projected Margin</span>
-                                <span class="text-3xl font-black text-white tracking-tighter">25.3%</span>
+                                <span class="text-3xl font-black text-white tracking-tighter" id="margin-display">25.3%</span>
                             </div>
                             <div class="p-4 bg-black/40 rounded">
-                                <span class="text-[9px] text-green-400 font-bold uppercase tracking-widest block mb-1">Risk Status</span>
-                                <span class="text-2xl font-black text-green-400 tracking-tighter uppercase">Optimal</span>
+                                <span class="text-[9px] text-green-400 font-bold uppercase tracking-widest block mb-1" id="risk-label">Risk Status</span>
+                                <span class="text-xl font-black text-green-400 tracking-tighter uppercase" id="risk-display">Optimal</span>
                             </div>
                             <div class="col-span-2 p-3 bg-white/[0.01] border border-white/5 rounded flex justify-between items-center text-xs">
                                 <span class="text-slate-400 uppercase tracking-widest text-[9px]">RiskMonitor™ Verdict:</span>
-                                <span class="text-[#00b4d8] font-bold uppercase text-[10px]">Approved for Tender Submission</span>
+                                <span class="text-[#00b4d8] font-bold uppercase text-[10px]" id="verdict-display">Approved for Tender Submission</span>
                             </div>
                         </div>
                     </div>
@@ -447,17 +449,17 @@
         </div>
     </section>
       
-   <!-- SINGLE FOCUSED PRICING CARD -->
-    <section class="pb-32 relative z-10">
+    <!-- PRICING SECTION -->
+    <section class="pb-32">
         <div class="max-w-2xl mx-auto px-6">
             <div class="pricing-card glass p-12 rounded-2xl border-[#00b4d8]/30 cyan-glow relative overflow-hidden">
                 <!-- SAVINGS BADGE -->
                 <div class="absolute top-0 right-0 bg-[#00b4d8] text-black text-[10px] font-black px-12 py-2 rotate-45 translate-x-10 translate-y-4 uppercase tracking-widest">
-                    Save R700
+                    Save R700 / mo
                 </div>
 
                 <div class="flex flex-col items-center text-center">
-                    <h3 class="text-[#00b4d8] text-sm font-black uppercase tracking-[0.5em] mb-6">Pioneer Tier Access</h3>
+                    <h3 class="text-[#00b4d8] text-sm font-black uppercase tracking-[0.5em] mb-6">Early Adopter Access</h3>
                     
                     <div class="flex items-baseline gap-4 mb-2">
                         <span class="text-slate-600 text-2xl line-through font-bold tracking-tighter">R1,499</span>
@@ -465,46 +467,37 @@
                     </div>
                     <p class="text-slate-500 text-[10px] uppercase font-black tracking-widest mb-10">Per Month • Locked-in Forever</p>
 
-                    <a href="signup.html" class="premium-btn w-full bg-[#00b4d8] text-black text-xs font-black uppercase tracking-[0.2em] py-5 rounded-sm hover:bg-[#00b4d8]/90 transition mb-12 block text-center flex items-center justify-center gap-3">
-                        Start 7-Day Free Trial <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </a>
-
                     <div class="w-full space-y-6 mb-12 text-left border-y border-white/5 py-10">
-                        <div class="flex items-start gap-4">
-                            <i data-lucide="layers" class="w-5 h-5 text-[#00b4d8] shrink-0"></i>
-                            <div>
-                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">Multi-Industry Decision Engines</h4>
-                                <p class="text-slate-400 text-[11px] font-light">Full access across Construction, Manufacturing, Restaurants, and Consulting suites.</p>
-                            </div>
-                        </div>
                         <div class="flex items-start gap-4">
                             <i data-lucide="shield-check" class="w-5 h-5 text-[#00b4d8] shrink-0"></i>
                             <div>
-                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">RiskMonitor™ & Automated Verdicts</h4>
-                                <p class="text-slate-400 text-[11px] font-light">Real-time flags for margin loss, cost spikes, and project non-viability.</p>
+                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">Instant Self-Service Activation</h4>
+                                <p class="text-slate-400 text-[11px] font-light">Skip the sales calls. Create your account and run your first contract analysis in under 60 seconds.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
-                            <i data-lucide="file-down" class="w-5 h-5 text-[#00b4d8] shrink-0"></i>
+                            <i data-lucide="zap" class="w-5 h-5 text-[#00b4d8] shrink-0"></i>
                             <div>
-                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">Executive Reports & CSV Exports</h4>
-                                <p class="text-slate-400 text-[11px] font-light">Generate instant client proposals, CSVs for financial models, and official board summaries.</p>
+                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">Full Predictive Engine</h4>
+                                <p class="text-slate-400 text-[11px] font-light">Unlimited project analysis with the core decision engine across all 4 industrial suites.</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-4">
-                            <i data-lucide="database" class="w-5 h-5 text-[#00b4d8] shrink-0"></i>
+                            <i data-lucide="trending-up" class="w-5 h-5 text-[#00b4d8] shrink-0"></i>
                             <div>
-                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">Save & Compare Workspace</h4>
-                                <p class="text-slate-400 text-[11px] font-light">Archive historical deal analyses and compare multiple proposals side-by-side.</p>
+                                <h4 class="text-white text-xs font-bold uppercase tracking-widest mb-1">RiskMonitor™ Alerts</h4>
+                                <p class="text-slate-400 text-[11px] font-light">Instant triggers for material spikes, overhead slippage, and labor inefficiencies.</p>
                             </div>
                         </div>
                     </div>
-                    <p class="text-slate-600 text-[9px] uppercase font-bold tracking-widest italic">Secure 1 of 5 pioneer spots remaining.</p>
+                    <a href="signup.html" class="premium-btn w-full bg-[#00b4d8] text-black text-xs font-black uppercase tracking-[0.2em] py-5 rounded-sm hover:bg-[#00b4d8]/90 transition block text-center flex items-center justify-center gap-3">
+                        Claim Pioneer Access <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                    <p class="mt-4 text-slate-600 text-[9px] uppercase font-bold tracking-widest italic">Secure 1 of 5 remaining pioneer spots.</p>
                 </div>
             </div>
         </div>
     </section>
-
     
     <!-- FOUNDER / SYSTEMS ARCHITECT SECTION -->
     <section class="py-32 border-t border-white/5 bg-gradient-to-b from-transparent to-black/50">
@@ -638,6 +631,37 @@
         document.addEventListener("DOMContentLoaded", function() {
             lucide.createIcons();
         });
+
+        // Interactive Hero Simulator Logic
+        function updateSimulator() {
+            const tenderVal = parseFloat(document.getElementById('tender-slider').value);
+            const costVal = parseFloat(document.getElementById('cost-slider').value);
+            
+            document.getElementById('val-display').innerText = 'R' + tenderVal.toLocaleString();
+            document.getElementById('cost-display').innerText = 'R' + costVal.toLocaleString();
+
+            const profit = tenderVal - costVal;
+            const margin = (profit / tenderVal) * 100;
+            
+            document.getElementById('margin-display').innerText = margin.toFixed(1) + '%';
+
+            const riskDisplay = document.getElementById('risk-display');
+            const verdictDisplay = document.getElementById('verdict-display');
+
+            if (margin >= 20) {
+                riskDisplay.innerText = 'Optimal';
+                riskDisplay.className = 'text-xl font-black text-green-400 tracking-tighter uppercase';
+                verdictDisplay.innerText = 'Approved for Tender Submission';
+            } else if (margin >= 10) {
+                riskDisplay.innerText = 'Moderate';
+                riskDisplay.className = 'text-xl font-black text-yellow-400 tracking-tighter uppercase';
+                verdictDisplay.innerText = 'Review Labor Overhead Before Bidding';
+            } else {
+                riskDisplay.innerText = 'High Risk';
+                riskDisplay.className = 'text-xl font-black text-red-500 tracking-tighter uppercase';
+                verdictDisplay.innerText = 'Warning: Margin Below Threshold';
+            }
+        }
     </script>
     <script src="js/home.js"></script>
 
