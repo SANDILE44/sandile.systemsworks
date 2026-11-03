@@ -14,7 +14,7 @@
       --accent:  #00d5ff;
       --accent2: #0098b8;
       --text:    #e8f0f8;
-      --muted:    #4a6a85;
+      --muted:   #4a6a85;
       --border:  rgba(0,213,255,0.13);
       --green:   #00e87a;
       --yellow:  #ffb800;
@@ -36,7 +36,7 @@
     }
 
     .pay-card {
-      width: min(480px, 100%);
+      width: min(540px, 100%);
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 24px;
@@ -76,8 +76,8 @@
       width: 72px;
       height: 72px;
       border-radius: 50%;
-      background: rgba(255,184,0,0.08);
-      border: 1px solid rgba(255,184,0,0.2);
+      background: rgba(0,213,255,0.08);
+      border: 1px solid rgba(0,213,255,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -246,15 +246,15 @@
     </div>
 
     <div class="secure-notice">
-      🔒 Secure encrypted payment via Paystack
+      🔒 Bank-grade encrypted checkout via Paystack
     </div>
 
-    <a href="dashboard.html" class="back-link">← Back to dashboard</a>
+    <a href="dashboard.html" class="back-link">← Return to Business Workspace</a>
   </div>
 
   <div id="global-loader" class="loader-overlay hidden">
     <div class="loader-spinner"></div>
-    <p>Please wait…</p>
+    <p>Connecting to secure payment gateway…</p>
   </div>
 
   <script src="js/config.js"></script>
@@ -269,15 +269,14 @@
       const payBox = document.getElementById('payBox');
       if (!payBox) return;
 
-      // Matches your Backend: subscriptions.calculators.status
       const subStatus = profile.user?.subscriptions?.calculators?.status;
       const isSubscribed = subStatus === 'active';
 
       if (isSubscribed) {
         payBox.innerHTML = `
           <div class="status-active">
-            <p style="color:var(--green); font-weight:800; margin-bottom:4px;">✅ Active Subscription</p>
-            <p style="color:var(--muted); font-size:0.85rem;">Redirecting you back to your workspace...</p>
+            <p style="color:var(--green); font-weight:800; margin-bottom:4px;">✅ Multi-Industry Workspace Active</p>
+            <p style="color:var(--muted); font-size:0.85rem;">Redirecting you back to your dashboard...</p>
           </div>
         `;
         setTimeout(() => (window.location.href = 'dashboard.html'), 1500);
@@ -285,24 +284,25 @@
       }
 
       payBox.innerHTML = `
-        <div class="pay-icon">💎</div>
-        <h1 class="pay-title">Professional Access</h1>
-        <p class="pay-sub">Your trial has ended. Secure full access to the Decision Engine to protect your business margins.</p>
+        <div class="pay-icon">⚡</div>
+        <h1 class="pay-title">Full Business Workspace</h1>
+        <p class="pay-sub">Unlock all four industry tools, live margin models, and unlimited saved deals across your entire portfolio.</p>
 
         <div class="price-box">
-          <div class="price-amount">R6,999 <span>/ month</span></div>
-          <p class="price-note"><strong>7 days free</strong> · Full access · Cancel anytime</p>
+          <div class="price-amount">R799 <span>/ month</span></div>
+          <p class="price-note"><strong>7 days free trial</strong> · All 4 industry tools included · Cancel anytime</p>
         </div>
 
         <ul class="pay-features">
-          <li>Full Construction Profitability Engine</li>
-          <li>Unlimited Saved Decisions & Deals</li>
-          <li>Advanced Risk & ROI Analytics</li>
-          <li>Export Professional PDF Reports</li>
-          <li>Priority 24/7 WhatsApp Support</li>
+          <li>Construction Tool & Saved Deals Manager</li>
+          <li>Manufacturing Unit Economics & Break-even Engine</li>
+          <li>Restaurant Food Cost & Operations Calculator</li>
+          <li>Consulting Project Revenue & Margin Estimator</li>
+          <li>Instant CSV & Professional PDF Report Exports</li>
+          <li>Priority 24/7 WhatsApp & Direct Tech Support</li>
         </ul>
 
-        <button type="button" class="btn-pay" id="payBtn">Grant Full Access</button>
+        <button type="button" class="btn-pay" id="payBtn">Activate All 4 Industry Tools</button>
       `;
 
       document.getElementById('payBtn').addEventListener('click', async () => {
