@@ -263,6 +263,25 @@ const detailFields = {
     ["dailyCovers", "Daily covers", "number"],
     ["breakEven", "Break-even covers", "number"],
     ["breakevenCovers", "Break-even covers", "number"]
+  ],
+  "logistics-operations": [
+    ["totalRevenue", "Monthly revenue", "money"],
+    ["totalCosts", "Monthly costs", "money"],
+    ["annualProfit", "Annual profit", "money"],
+    ["costPerShipment", "Cost per shipment", "money"],
+    ["profitPerShipment", "Profit per shipment", "money"]
+  ],
+  "logistics-shipment": [
+    ["totalCost", "Shipment cost", "money"],
+    ["recommendedMinQuote", "Recommended minimum quote", "money"],
+    ["reason", "Decision explanation", "text"]
+  ],
+  "logistics-freight": [
+    ["totalCost", "Total logistics cost", "money"],
+    ["insuranceCost", "Insurance cost", "money"],
+    ["dutyCost", "Duty cost", "money"],
+    ["breakEvenQuote", "Break-even quote", "money"],
+    ["reason", "Decision explanation", "text"]
   ]
 };
 
@@ -281,7 +300,7 @@ function renderDetails(type, results) {
         ${entries.map(([key, label, kind]) => `
           <div class="share-detail">
             <span>${escapeHTML(label)}</span>
-            <strong>${kind === "money" ? `R ${formatNum(results[key])}` : escapeHTML(formatMetric(key, results[key]))}</strong>
+            <strong>${kind === "money" ? `R ${formatNum(results[key])}` : kind === "text" ? escapeHTML(results[key]) : escapeHTML(formatMetric(key, results[key]))}</strong>
           </div>
         `).join("")}
       </div>
@@ -353,20 +372,29 @@ function renderReport(deal) {
         <p class="share-profit ${metricClassFor(profit)}">R ${formatNum(profit)}</p>
       </section>
 
-      <div class="share-metrics" aria-label="Key performance indicators">
-        <div class="share-metric">
-          <span>Profit margin</span>
-          <strong class="${marginClass}">${percent(results.margin)}</strong>
+      ${(results.margin !== undefined && results.margin !== null) ||
+        (results.roi !== undefined && results.roi !== null) || status ? `
+        <div class="share-metrics" aria-label="Key performance indicators">
+          ${results.margin !== undefined && results.margin !== null ? `
+            <div class="share-metric">
+              <span>Profit margin</span>
+              <strong class="${marginClass}">${percent(results.margin)}</strong>
+            </div>
+          ` : ""}
+          ${results.roi !== undefined && results.roi !== null ? `
+            <div class="share-metric">
+              <span>Return on investment</span>
+              <strong class="${roiClass}">${percent(results.roi)}</strong>
+            </div>
+          ` : ""}
+          ${status ? `
+            <div class="share-metric">
+              <span>Project status</span>
+              <strong>${escapeHTML(typeof status === "object" ? status.status || "Analysis complete" : status)}</strong>
+            </div>
+          ` : ""}
         </div>
-        <div class="share-metric">
-          <span>Return on investment</span>
-          <strong class="${roiClass}">${percent(results.roi)}</strong>
-        </div>
-        <div class="share-metric">
-          <span>Project status</span>
-          <strong>${escapeHTML(status || "Analysis complete")}</strong>
-        </div>
-      </div>
+      ` : ""}
 
       ${renderDetails(type, results)}
       ${status || recommendation || riskLevel ? `

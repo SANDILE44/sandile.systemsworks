@@ -2,6 +2,9 @@
    FREIGHT IMPORT / EXPORT CALCULATOR
 ===================================================== */
 
+let latestFreightInputs = null;
+let latestFreightResults = null;
+
 async function runFreight() {
 
     const elQuote = $("freight-quote");
@@ -29,12 +32,16 @@ async function runFreight() {
         otherCosts: parseFloat($("freight-other-costs")?.value) || 0
     };
 
+    latestFreightInputs = null;
+    latestFreightResults = null;
     const data = await apiPost(
         "/api/calculators/logistics/freight",
         inputs
     );
 
     if (!data) return;
+    latestFreightInputs = { ...inputs };
+    latestFreightResults = data;
 
     /* ==========================
        RESULTS
@@ -91,26 +98,46 @@ async function runFreight() {
         data.steps || []
     );
 
-    /* ==========================
-       SAVE BUTTON
-    ========================== */
-
-    const saveBtn = $("saveFreightBtn");
-
-    if (saveBtn) {
-
-        saveBtn.onclick = () => {
-
-            saveDeal(
-                "logistics-freight",
-                {
-                    inputs,
-                    results: data
-                }
-            );
-
-        };
-
-    }
-
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    bindLogisticsActions("logistics-freight", {
+        name: "Freight import and export analysis",
+        save: "saveFreightBtn",
+        share: "shareFreightBtn",
+        compare: "compareFreightBtn",
+        csv: "exportFreightCsvBtn",
+        report: "exportFreightReportBtn",
+        inputMap: {
+            quote: "freight-quote",
+            cargoValue: "freight-cargo-value",
+            insuranceRate: "freight-insurance-rate",
+            freightCost: "freight-cost",
+            fuelSurcharge: "freight-fuel-surcharge",
+            dutyRate: "freight-duty-rate",
+            customsFees: "freight-customs-fees",
+            portFees: "freight-port-fees",
+            handlingFees: "freight-handling-fees",
+            inlandTransport: "freight-inland-transport",
+            tolls: "freight-tolls",
+            otherCosts: "freight-other-costs"
+        }
+    }, () => ({
+        inputs: latestFreightInputs,
+        results: latestFreightResults
+    }));
+    hydrateLogisticsEdit("logistics-freight", {
+        quote: "freight-quote",
+        cargoValue: "freight-cargo-value",
+        insuranceRate: "freight-insurance-rate",
+        freightCost: "freight-cost",
+        fuelSurcharge: "freight-fuel-surcharge",
+        dutyRate: "freight-duty-rate",
+        customsFees: "freight-customs-fees",
+        portFees: "freight-port-fees",
+        handlingFees: "freight-handling-fees",
+        inlandTransport: "freight-inland-transport",
+        tolls: "freight-tolls",
+        otherCosts: "freight-other-costs"
+    }, runFreight);
+});

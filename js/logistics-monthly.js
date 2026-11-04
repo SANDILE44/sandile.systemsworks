@@ -2,6 +2,9 @@
    MONTHLY OPERATIONS CALCULATOR
 ===================================================== */
 
+let latestMonthlyInputs = null;
+let latestMonthlyResults = null;
+
 async function runMonthly() {
 
     const elShipments = $("log-shipments");
@@ -16,12 +19,16 @@ async function runMonthly() {
         fixed: parseFloat($("log-fixed")?.value) || 0
     };
 
+    latestMonthlyInputs = null;
+    latestMonthlyResults = null;
     const data = await apiPost(
         "/api/calculators/logistics/business",
         inputs
     );
 
     if (!data) return;
+    latestMonthlyInputs = { ...inputs };
+    latestMonthlyResults = data;
 
     const decision = data.decision || {};
 
@@ -191,26 +198,34 @@ async function runMonthly() {
 
     }
 
-    /* ==========================
-       SAVE DEAL
-    ========================== */
-
-    const saveBtn = $("saveOperationsBtn");
-
-    if (saveBtn) {
-
-        saveBtn.onclick = () => {
-
-            saveDeal(
-                "logistics-business",
-                {
-                    inputs,
-                    results: data
-                }
-            );
-
-        };
-
-    }
-
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    bindLogisticsActions("logistics-operations", {
+        name: "Monthly logistics operations",
+        save: "saveOperationsBtn",
+        share: "shareOperationsBtn",
+        compare: "compareOperationsBtn",
+        csv: "exportOperationsCsvBtn",
+        report: "exportOperationsReportBtn",
+        inputMap: {
+            shipments: "log-shipments",
+            revenuePer: "log-revenue",
+            fuel: "log-fuel",
+            labor: "log-labor",
+            maintenance: "log-maintenance",
+            fixed: "log-fixed"
+        }
+    }, () => ({
+        inputs: latestMonthlyInputs,
+        results: latestMonthlyResults
+    }));
+    hydrateLogisticsEdit("logistics-operations", {
+        shipments: "log-shipments",
+        revenuePer: "log-revenue",
+        fuel: "log-fuel",
+        labor: "log-labor",
+        maintenance: "log-maintenance",
+        fixed: "log-fixed"
+    }, runMonthly);
+});

@@ -6,29 +6,11 @@
     <title>Logistics Calculators - Sandile SystemsWorks</title>
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/calculators.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
 
   <body>
     <style>
-
-      .tool-panel {
-  display: flex;
-  flex-direction: column;
-    display: flex;
-  flex-direction: column;
-  min-height: auto;
-  overflow: visible;
-}
-
-.tool-panel {
-  min-height: 60vh;
-}
-
-      .calculator-container {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
 
       .calculator-grid {
    display: grid;
@@ -56,6 +38,9 @@
   }  
 
   .tool-btn {  
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
     padding: 12px 20px;  
     border: none;  
     background: #1f2937;  
@@ -72,17 +57,23 @@
   .tool-btn.active {  
     background: #2563eb;  
   }  
+  .tool-btn svg {
+    width: 18px;
+    height: 18px;
+  }
 
   .tool-panel {
-  width: 100%;
-  display: block;
-}
+    width: 100%;
+    min-height: 60vh;
+    overflow: visible;
+  }
 
-.calculator-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+  .calculator-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
 
   .hidden {  
     display: none;  
@@ -312,6 +303,10 @@ line-height: 1.4;
             <i data-lucide="bookmark"></i>
             <span>Saved Deals</span>
           </a>
+          <a href="compare.html" class="nav-link">
+            <i data-lucide="scale"></i>
+            <span>Compare Deals</span>
+          </a>
 
 </div>
 
@@ -350,16 +345,19 @@ clear margin visibility and operational risk detection.
             </p>
           
           <div class="tool-buttons">
-            <button id="btn-operations" class="tool-btn">
+            <button id="btn-operations" class="tool-btn" type="button" aria-controls="operations-panel" aria-pressed="false">
+              <i data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
               Monthly Operations Analysis
             </button>
 
-            <button id="btn-shipment" class="tool-btn">
+            <button id="btn-shipment" class="tool-btn" type="button" aria-controls="shipment-panel" aria-pressed="false">
+              <i data-lucide="truck" aria-hidden="true"></i>
               Per-Shipment Risk Analysis
             </button>
 
-            <button id="btn-freight" class="tool-btn">
-  Freight Import / Export Analysis
+            <button id="btn-freight" class="tool-btn" type="button" aria-controls="freight-panel" aria-pressed="false">
+              <i data-lucide="ship" aria-hidden="true"></i>
+              Freight Import / Export Analysis
             </button>
           </div>
         </div>
@@ -484,6 +482,10 @@ clear margin visibility and operational risk detection.
         <button id="shareOperationsBtn" class="saveDealBtn share-theme">
             <i data-lucide="share-2"></i>
             <span>Share Deal</span>
+        </button>
+        <button id="compareOperationsBtn" class="saveDealBtn">
+            <i data-lucide="scale"></i>
+            <span>Compare Deal</span>
         </button>
 
     </div>
@@ -872,6 +874,10 @@ Reset All
     <i data-lucide="share-2"></i>
     <span>Share Deal</span>
   </button>
+  <button id="compareShipmentBtn" class="saveDealBtn">
+    <i data-lucide="scale"></i>
+    <span>Compare Deal</span>
+  </button>
 </div>
 
 <!-- SECONDARY EXPORTS -->
@@ -1008,6 +1014,31 @@ Reset All
 
       <h3>Freight Results</h3>
 
+      <div class="action-stack">
+        <button id="saveFreightBtn" class="saveDealBtn" type="button">
+          <i data-lucide="save"></i>
+          <span>Save Deal</span>
+        </button>
+        <button id="shareFreightBtn" class="saveDealBtn share-theme" type="button">
+          <i data-lucide="share-2"></i>
+          <span>Share Deal</span>
+        </button>
+        <button id="compareFreightBtn" class="saveDealBtn" type="button">
+          <i data-lucide="scale"></i>
+          <span>Compare Deal</span>
+        </button>
+      </div>
+      <div class="export-group">
+        <button id="exportFreightCsvBtn" class="exportBtn" type="button">
+          <i data-lucide="file-spreadsheet"></i>
+          <span>Export CSV</span>
+        </button>
+        <button id="exportFreightReportBtn" class="exportBtn" type="button">
+          <i data-lucide="file-text"></i>
+          <span>Export Report</span>
+        </button>
+      </div>
+
       <div class="output-group">
         <div class="output-label">Insurance Cost</div>
         <div class="output-value" id="freight-insurance-cost">0.00</div>
@@ -1140,6 +1171,10 @@ Reset All
     btnOperations.classList.add("active");
     btnShipment.classList.remove("active");
     btnFreight.classList.remove("active");
+    btnOperations.setAttribute("aria-pressed", "true");
+    btnShipment.setAttribute("aria-pressed", "false");
+    btnFreight.setAttribute("aria-pressed", "false");
+    localStorage.setItem("activeLogisticsTab", "operations");
 
     operationsPanel.classList.remove("hidden");
     shipmentPanel.classList.add("hidden");
@@ -1155,6 +1190,10 @@ Reset All
     btnShipment.classList.add("active");
     btnOperations.classList.remove("active");
     btnFreight.classList.remove("active");
+    btnOperations.setAttribute("aria-pressed", "false");
+    btnShipment.setAttribute("aria-pressed", "true");
+    btnFreight.setAttribute("aria-pressed", "false");
+    localStorage.setItem("activeLogisticsTab", "shipment");
 
     shipmentPanel.classList.remove("hidden");
     operationsPanel.classList.add("hidden");
@@ -1170,6 +1209,10 @@ Reset All
     btnFreight.classList.add("active");
     btnOperations.classList.remove("active");
     btnShipment.classList.remove("active");
+    btnOperations.setAttribute("aria-pressed", "false");
+    btnShipment.setAttribute("aria-pressed", "false");
+    btnFreight.setAttribute("aria-pressed", "true");
+    localStorage.setItem("activeLogisticsTab", "freight");
 
     freightPanel.classList.remove("hidden");
     operationsPanel.classList.add("hidden");
@@ -1178,6 +1221,11 @@ Reset All
     placeholder.classList.add("hidden");
 
   });
+
+  const activeTab = localStorage.getItem("activeLogisticsTab");
+  if (activeTab === "operations") btnOperations.click();
+  else if (activeTab === "shipment") btnShipment.click();
+  else if (activeTab === "freight") btnFreight.click();
 
 })();
 </script>
@@ -1188,6 +1236,8 @@ Reset All
 <script src="js/guard.js"></script>
 <script src="js/auth.js"></script>
 
+<script src="js/button-loading.js"></script>
+<script src="js/compare.js"></script>
 <script src="js/logistics.js"></script>
 <script src="js/logistics-monthly.js"></script>
 <script src="js/logistics-shipment.js"></script>
@@ -1195,6 +1245,7 @@ Reset All
 
 <script src="js/user-display.js"></script>
 <script src="js/hamburger.js"></script>
+<script>lucide.createIcons();</script>
 
   </body>
 </html>

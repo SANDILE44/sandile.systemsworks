@@ -5,7 +5,10 @@
     consulting: "industry-consulting.html",
     construction: "industry-construction.html",
     manufacturing: "industry-manufacturing.html",
-    restaurant: "industry-restaurants.html"
+    restaurant: "industry-restaurants.html",
+    "logistics-operations": "industry-logistics.html",
+    "logistics-shipment": "industry-logistics.html",
+    "logistics-freight": "industry-logistics.html"
   };
 
   function readScenarios() {
@@ -18,6 +21,9 @@
           calculatorPages[scenario.type] &&
           scenario.inputs &&
           scenario.results
+        ).sort((a, b) =>
+          (Date.parse(b.updatedAt || b.createdAt) || 0) -
+          (Date.parse(a.updatedAt || a.createdAt) || 0)
         ).slice(0, MAX_SCENARIOS).map((scenario) => ({
           ...scenario,
           name: typeof scenario.name === "string" && scenario.name.trim()
@@ -131,7 +137,10 @@
       consulting: "Consulting",
       construction: "Construction",
       manufacturing: "Manufacturing",
-      restaurant: "Restaurant"
+      restaurant: "Restaurant",
+      "logistics-operations": "Monthly logistics operations",
+      "logistics-shipment": "Logistics shipment",
+      "logistics-freight": "Logistics freight"
     }[type] || "Business";
   }
 
@@ -143,7 +152,10 @@
       consulting: "Consulting",
       construction: "Construction",
       manufacturing: "Manufacturing",
-      restaurant: "Restaurant"
+      restaurant: "Restaurant",
+      "logistics-operations": "Monthly logistics operations",
+      "logistics-shipment": "Logistics shipment",
+      "logistics-freight": "Logistics freight"
     };
 
     const inputLabels = {
@@ -183,6 +195,48 @@
         labor: ["Labor costs", "money"],
         fixed: ["Fixed costs", "money"],
         days: ["Operating days", "number"]
+      },
+      "logistics-operations": {
+        shipments: ["Shipments per month", "number"],
+        revenuePer: ["Revenue per shipment", "money"],
+        fuel: ["Monthly fuel costs", "money"],
+        labor: ["Monthly labor costs", "money"],
+        maintenance: ["Maintenance costs", "money"],
+        fixed: ["Fixed costs", "money"]
+      },
+      "logistics-shipment": {
+        quote: ["Client quote", "money"],
+        minMargin: ["Required minimum margin", "percent"],
+        buffer: ["Safety buffer", "percent"],
+        distance: ["Distance (km)", "number"],
+        fuelPerKm: ["Fuel cost per km", "money"],
+        vehiclePerKm: ["Vehicle cost per km", "money"],
+        loadFactor: ["Load factor", "percent"],
+        drivingHours: ["Driving hours", "number"],
+        waitingHours: ["Loading and waiting hours", "number"],
+        driverRate: ["Driver cost per hour", "money"],
+        tolls: ["Tolls", "money"],
+        permits: ["Permits and border fees", "money"],
+        otherFees: ["Other route expenses", "money"],
+        cargoValue: ["Cargo value", "money"],
+        insuranceRate: ["Insurance rate", "percent"],
+        duties: ["Customs duties", "money"],
+        handling: ["Handling fees", "money"],
+        passThrough: ["Pass-through costs", "money"]
+      },
+      "logistics-freight": {
+        quote: ["Client quote", "money"],
+        cargoValue: ["Cargo value", "money"],
+        insuranceRate: ["Insurance rate", "percent"],
+        freightCost: ["Freight cost", "money"],
+        fuelSurcharge: ["Fuel surcharge", "money"],
+        dutyRate: ["Import duty rate", "percent"],
+        customsFees: ["Customs fees", "money"],
+        portFees: ["Port fees", "money"],
+        handlingFees: ["Handling charges", "money"],
+        inlandTransport: ["Inland transport", "money"],
+        tolls: ["Tolls", "money"],
+        otherCosts: ["Other costs", "money"]
       }
     };
 
@@ -228,6 +282,28 @@
         ["annualProfit", "Annual profit", "money"],
         ["profitPerCover", "Profit per cover", "money"],
         ["costRatio", "Cost ratio", "percent"]
+      ],
+      "logistics-operations": [
+        ["profit", "Net profit", "money"],
+        ["totalRevenue", "Total revenue", "money"],
+        ["totalCosts", "Total costs", "money"],
+        ["annualProfit", "Annual profit", "money"],
+        ["costPerShipment", "Cost per shipment", "money"],
+        ["profitPerShipment", "Profit per shipment", "money"]
+      ],
+      "logistics-shipment": [
+        ["profit", "Estimated profit", "money"],
+        ["totalCost", "Total shipment cost", "money"],
+        ["margin", "Profit margin", "percent"],
+        ["recommendedMinQuote", "Recommended minimum quote", "money"]
+      ],
+      "logistics-freight": [
+        ["profit", "Estimated profit", "money"],
+        ["totalCost", "Total logistics cost", "money"],
+        ["margin", "Profit margin", "percent"],
+        ["breakEvenQuote", "Break-even quote", "money"],
+        ["insuranceCost", "Insurance cost", "money"],
+        ["dutyCost", "Duty cost", "money"]
       ]
     };
 
@@ -275,7 +351,7 @@
           <section class="compare-empty">
             <span class="empty-icon" aria-hidden="true">+</span>
             <h2>Your comparison starts here</h2>
-            <p>Add a calculated scenario from any of the four tools. Then duplicate it to test another set of assumptions side by side.</p>
+            <p>Add a calculated scenario from a calculator, then duplicate it to test another set of assumptions side by side.</p>
             <div class="tool-links">
               ${Object.entries(calculatorPages).map(([type, page]) =>
                 `<a class="compare-button secondary" href="${page}">Open ${labels[type]} tool</a>`

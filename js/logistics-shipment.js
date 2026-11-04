@@ -2,6 +2,9 @@
    PER SHIPMENT CALCULATOR
 ===================================================== */
 
+let latestShipmentInputs = null;
+let latestShipmentResults = null;
+
 async function runShipment() {
 
     const elQuote = $("ship-quote");
@@ -40,12 +43,16 @@ async function runShipment() {
         passThrough: parseFloat($("ship-pass-through")?.value) || 0
     };
 
+    latestShipmentInputs = null;
+    latestShipmentResults = null;
     const data = await apiPost(
         "/api/calculators/logistics/shipment",
         inputs
     );
 
     if (!data) return;
+    latestShipmentInputs = { ...inputs };
+    latestShipmentResults = data;
 
     /* ==========================
        RESULTS
@@ -99,50 +106,58 @@ async function runShipment() {
         data.steps || []
     );
 
-    /* ==========================
-       SAVE BUTTON
-    ========================== */
-
-    const saveBtn = $("saveShipmentBtn");
-
-    if (saveBtn) {
-
-        saveBtn.onclick = async () => {
-
-            await saveDeal(
-                "logistics-shipment",
-                {
-                    inputs,
-                    results: data
-                }
-            );
-
-        };
-
-    }
-
 }
 
-/* =====================================================
-   BUTTON LISTENERS & INITIALIZATION
-===================================================== */
-
 document.addEventListener("DOMContentLoaded", () => {
-
-    // 1. Reset Button functionality
-    $("resetShipmentBtn")?.addEventListener("click", () => {
-        document.querySelectorAll("#shipment-panel input").forEach(input => input.value = "");
-        runShipment(); // Clears outputs
-    });
-
-    // 2. Export CSV button hookup
-    $("exportShipmentCsvBtn")?.addEventListener("click", () => {
-        alert("Exporting Shipment CSV report...");
-    });
-
-    // 3. Export Report (Print) button hookup
-    $("exportShipmentReportBtn")?.addEventListener("click", () => {
-        window.print();
-    });
-
+    bindLogisticsActions("logistics-shipment", {
+        name: "Shipment risk analysis",
+        save: "saveShipmentBtn",
+        share: "shareShipmentBtn",
+        compare: "compareShipmentBtn",
+        csv: "exportShipmentCsvBtn",
+        report: "exportShipmentReportBtn",
+        inputMap: {
+            quote: "ship-quote",
+            minMargin: "ship-min-margin",
+            buffer: "ship-buffer",
+            distance: "ship-distance",
+            fuelPerKm: "ship-fuel-km",
+            vehiclePerKm: "ship-vehicle-km",
+            loadFactor: "ship-load-factor",
+            drivingHours: "ship-driving-hours",
+            waitingHours: "ship-wait-hours",
+            driverRate: "ship-driver-rate",
+            tolls: "ship-tolls",
+            permits: "ship-permits",
+            otherFees: "ship-other-fees",
+            cargoValue: "ship-cargo-value",
+            insuranceRate: "ship-insurance",
+            duties: "ship-duties",
+            handling: "ship-handling",
+            passThrough: "ship-pass-through"
+        }
+    }, () => ({
+        inputs: latestShipmentInputs,
+        results: latestShipmentResults
+    }));
+    hydrateLogisticsEdit("logistics-shipment", {
+        quote: "ship-quote",
+        minMargin: "ship-min-margin",
+        buffer: "ship-buffer",
+        distance: "ship-distance",
+        fuelPerKm: "ship-fuel-km",
+        vehiclePerKm: "ship-vehicle-km",
+        loadFactor: "ship-load-factor",
+        drivingHours: "ship-driving-hours",
+        waitingHours: "ship-wait-hours",
+        driverRate: "ship-driver-rate",
+        tolls: "ship-tolls",
+        permits: "ship-permits",
+        otherFees: "ship-other-fees",
+        cargoValue: "ship-cargo-value",
+        insuranceRate: "ship-insurance",
+        duties: "ship-duties",
+        handling: "ship-handling",
+        passThrough: "ship-pass-through"
+    }, runShipment);
 });

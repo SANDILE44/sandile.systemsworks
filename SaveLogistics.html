@@ -40,6 +40,10 @@
             <i data-lucide="bookmark"></i>
             <span>Saved Deals</span>
           </a>
+          <a href="compare.html" class="nav-link">
+            <i data-lucide="scale"></i>
+            <span>Compare Deals</span>
+          </a>
         </nav>
       </div>
 
@@ -74,15 +78,16 @@
           <div class="search-wrapper">
             <div class="search-input-container">
               <i data-lucide="search" class="search-icon"></i>
-              <input 
+              <input
                 id="searchInput" 
                 name="dealSearch" 
                 type="search" 
                 placeholder="Search by type, profit, or status..." 
                 autocomplete="off" 
+                aria-label="Search saved logistics deals"
               />
             </div>
-            <div id="searchMeta" class="industry-meta">Showing all logistics deals</div>
+            <div id="searchMeta" class="industry-meta" aria-live="polite">Showing newest logistics deals first</div>
           </div>
         </div>
 
@@ -103,6 +108,9 @@
   <script src="js/auth.js"></script>
   <script src="js/hamburger.js"></script>
   <script src="js/user-display.js"></script>
+  <script src="js/button-loading.js"></script>
+  <script src="js/compare.js"></script>
+  <script src="js/logistics.js"></script>
   <script src="js/savedDealsLogistics.js"></script>
   
   <script>lucide.createIcons();</script>
