@@ -281,6 +281,7 @@ const detailFields = {
     ["insuranceCost", "Insurance cost", "money"],
     ["dutyCost", "Duty cost", "money"],
     ["breakEvenQuote", "Break-even quote", "money"],
+    ["recommendedQuote", "Recommended quote", "money"],
     ["reason", "Decision explanation", "text"]
   ]
 };
@@ -352,9 +353,13 @@ function renderReport(deal) {
   const roiClass = metricClassFor(results.roi);
   const title = projectName;
   const profit = Number(results.profit) || 0;
-  const status = results.status || results.decision;
-  const recommendation = results.action || results.advice;
-  const riskLevel = results.riskLevel;
+  const decision = results.decision && typeof results.decision === "object"
+    ? results.decision
+    : {};
+  const status = results.status || decision.status ||
+    (typeof results.decision === "string" ? results.decision : "");
+  const recommendation = results.action || results.advice || decision.advice;
+  const riskLevel = results.riskLevel || results.shipmentRisk || decision.riskLevel;
 
   titleEl.textContent = title;
   document.title = `${title} | Shared Business Analysis`;

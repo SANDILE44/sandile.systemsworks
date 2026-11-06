@@ -39,8 +39,12 @@ async function runMonthly() {
     setText("log-total-revenue", money(data.totalRevenue));
     setText("log-total-costs", money(data.totalCosts));
     setText("log-profit", money(data.profit));
-    setText("log-status", decision.status || "—");
+    setText("log-margin", percent(data.margin));
+    setText("log-roi", percent(data.roi));
+    setText("log-break-even-quote", money(data.costPerShipment));
+    setText("log-profit-run-rate", `${money(data.profit)} / month`);
     setText("log-annual-profit", money(data.annualProfit));
+    setDecisionBanner("log-status", "log-advice", decision.status, decision.advice, decision.riskLevel, data.profit);
 
     /* ==========================
        PER SHIPMENT
@@ -57,23 +61,9 @@ async function runMonthly() {
     );
 
     setText(
-        "log-per-shipment",
-        money(data.costPerShipment)
-    );
-
-    setText(
         "log-profit-per-shipment",
         money(data.profitPerShipment)
     );
-
-    /* ==========================
-       COST BREAKDOWN
-    ========================== */
-
-    setText("log-fuel-pct", percent(data.fuelPercent));
-    setText("log-labor-pct", percent(data.laborPercent));
-    setText("log-maintenance-pct", percent(data.maintenancePercent));
-    setText("log-fixed-pct", percent(data.fixedPercent));
 
     /* ==========================
        DECISION ENGINE
@@ -85,75 +75,37 @@ async function runMonthly() {
         "log-recommended-price",
         money(decision.recommendedPricePerShipment || 0)
     );
-    setText("log-advice", decision.advice || "");
-
-    /* ==========================
-       FINANCIAL SUMMARY
-    ========================== */
-
-    if (typeof renderCards === "function") {
-        renderCards(
-            "financial-summary",
-            data.financialSummary || []
-        );
-    }
-
-    /* ==========================
-       PROFITABILITY
-    ========================== */
-
-    if (typeof renderCards === "function") {
-        renderCards(
-            "profitability",
-            data.profitability || []
-        );
-    }
-
-    /* ==========================
-       DROPDOWN SECTIONS
-    ========================== */
-
-    if (typeof renderAccordion === "function") {
-
-        renderAccordion(
-            "priority-actions",
-            data.priorityActions || []
-        );
-
-        renderAccordion(
-            "cost-analysis",
-            data.costAnalysis || []
-        );
-
-        renderAccordion(
-            "pricing-strategy",
-            data.pricingStrategy || []
-        );
-
-        renderAccordion(
-            "break-even-analysis",
-            data.breakEvenAnalysis || []
-        );
-
-        renderAccordion(
-            "annual-outlook",
-            data.annualOutlook || []
-        );
-
-    }
-
-    /* ==========================
-       STEP BY STEP GUIDANCE
-    ========================== */
-
-    if (typeof renderSteps === "function") {
-
-        renderSteps(
-            "log-steps",
-            data.steps || []
-        );
-
-    }
+    const steps = data.steps || [];
+    const riskStep = steps.find(step => step.step === "Final Risk Assessment");
+    const fuelImpact = Number(inputs.fuel) * 0.1;
+    renderLogisticsInsights("operations-insights", {
+        profitability: [
+            ...(data.financialSummary || []),
+            ...(data.profitability || [])
+        ],
+        costs: [
+            ...(data.costAnalysis || []),
+            {
+                title: "Fuel Cost Sensitivity",
+                message: inputs.fuel > 0
+                    ? `A 10% fuel-cost increase adds ${money(fuelImpact)} to monthly costs and reduces profit by the same amount.`
+                    : "Enter monthly fuel costs to calculate the impact of a fuel-price increase."
+            }
+        ],
+        operations: [
+            ...(data.priorityActions || []).map((message, index) => ({
+                title: `Priority Action ${index + 1}`,
+                message
+            })),
+            ...(riskStep ? [riskStep] : []),
+            ...steps.filter(step => step.step === "Profit Margin Check")
+        ],
+        growth: [
+            ...(data.pricingStrategy || []),
+            ...(data.breakEvenAnalysis || []),
+            ...(data.annualOutlook || [])
+        ]
+    });
 
     /* ==========================
        FLAGS (OPTIONAL)

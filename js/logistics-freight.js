@@ -52,11 +52,12 @@ async function runFreight() {
     setText("freight-total-cost", money(data.totalCost));
     setText("freight-profit", money(data.profit));
     setText("freight-margin", percent(data.margin));
-
+    setText("freight-roi", percent(data.totalCost > 0 ? (data.profit / data.totalCost) * 100 : 0));
     setText("freight-breakeven", money(data.breakEvenQuote));
-    setText("freight-decision", data.decision || "—");
-    setText("freight-reason", data.reason || "—");
+    setText("freight-run-rate", money(data.profit));
+    setText("freight-recommended-quote", money(data.recommendedQuote));
     setText("freight-risk", data.riskLevel || "—");
+    setDecisionBanner("freight-decision", "freight-reason", data.decision, data.reason, data.riskLevel, data.profit);
 
     /* ==========================
        STYLING
@@ -89,14 +90,46 @@ async function runFreight() {
 
     }
 
-    /* ==========================
-       STEP BY STEP
-    ========================== */
-
-    renderSteps(
-        "freight-steps",
-        data.steps || []
-    );
+    const steps = data.steps || [];
+    const findStep = title => steps.find(step => step.step === title);
+    renderLogisticsInsights("freight-insights", {
+        profitability: [
+            findStep("Total Costs vs Client Quote"),
+            findStep("Profit Margin Check")
+        ].filter(Boolean),
+        costs: [
+            findStep("Largest Cost Driver"),
+            findStep("Import Duty Assessment"),
+            {
+                title: "Fuel Surcharge Sensitivity",
+                message: inputs.fuelSurcharge > 0
+                    ? `A 10% fuel-surcharge increase adds ${money(inputs.fuelSurcharge * 0.1)} to costs and reduces profit by the same amount.`
+                    : "Enter a carrier fuel surcharge to calculate its effect on shipment profit."
+            },
+            {
+                title: "Duty Rate Sensitivity",
+                message: inputs.cargoValue > 0
+                    ? `Each additional 1 percentage point of import duty adds ${money(inputs.cargoValue * 0.01)} to the landed cost.`
+                    : "Enter cargo value to estimate the impact of a duty-rate change."
+            }
+        ],
+        operations: [
+            findStep("Break-even Quote"),
+            findStep("Final Risk Assessment")
+        ].filter(Boolean),
+        growth: [
+            {
+                title: "Recommended Quote",
+                message: `For the 20% target margin used by this tool, quote at least ${money(data.recommendedQuote)}.`
+            },
+            {
+                title: "Profit Opportunity",
+                message: data.profit > 0
+                    ? `Current profit is ${money(data.profit)} per shipment. Protect this margin by monitoring port, fuel and duty charges.`
+                    : "Requote above break-even and include an appropriate margin before accepting this shipment."
+            }
+        ]
+    });
 
 }
 

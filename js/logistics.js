@@ -82,6 +82,76 @@ function setClass(el, className) {
     el.className = `output-value ${className || ""}`;
 }
 
+function setDecisionBanner(statusId, explanationId, decision, explanation, riskLevel, profit) {
+    const status = $(statusId);
+    const advice = $(explanationId);
+    const rawDecision = String(decision || "").toLowerCase();
+    const risk = String(riskLevel || "").toLowerCase();
+    const isRejected = rawDecision.includes("reject") || rawDecision.includes("loss") ||
+        (Number.isFinite(Number(profit)) && Number(profit) < 0);
+    const isApproved = rawDecision.includes("approve") || rawDecision.includes("strong");
+
+    if (status) {
+        let label;
+        let tone;
+        if (isRejected) {
+            label = "✖ Unviable Margin";
+            tone = "danger";
+        } else if (risk === "high" || (!isApproved && (rawDecision.includes("review") || risk === "medium"))) {
+            label = "⚠ High Risk";
+            tone = "warning";
+        } else if (isApproved || risk === "low") {
+            label = "✔ Viable Deal";
+            tone = "success";
+        } else {
+            label = "⚠ Review Required";
+            tone = "warning";
+        }
+        status.textContent = label;
+        status.className = `decision-badge decision-badge--${tone}`;
+    }
+
+    if (advice) advice.textContent = explanation || "Review the calculated results before proceeding.";
+}
+
+function renderLogisticsInsights(panelId, groups) {
+    const panel = $(panelId);
+    if (!panel) return;
+
+    Object.entries(groups).forEach(([key, items]) => {
+        const content = panel.querySelector(`#${panelId.replace("-insights", "")}-insight-${key}`);
+        if (!content) return;
+
+        content.replaceChildren();
+        const entries = (items || []).filter(item =>
+            item && (typeof item === "string" || item.title || item.step || item.message)
+        );
+
+        if (!entries.length) {
+            const empty = document.createElement("article");
+            empty.className = "insight-card";
+            const message = document.createElement("p");
+            message.textContent = "Enter analysis details to see recommendations for this section.";
+            empty.appendChild(message);
+            content.appendChild(empty);
+            return;
+        }
+
+        entries.forEach((item, index) => {
+            const card = document.createElement("article");
+            card.className = "insight-card";
+            const title = document.createElement("h4");
+            const message = document.createElement("p");
+            title.textContent = typeof item === "string"
+                ? `Recommendation ${index + 1}`
+                : item.title || item.step || "Recommendation";
+            message.textContent = typeof item === "string" ? item : item.message || "";
+            card.append(title, message);
+            content.appendChild(card);
+        });
+    });
+}
+
 function renderSteps(containerId, steps = []) {
 
     const container = $(containerId);
@@ -95,6 +165,33 @@ function renderSteps(containerId, steps = []) {
         </li>
     `).join("");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".insights-panel").forEach(panel => {
+        const tabs = Array.from(panel.querySelectorAll('[role="tab"]'));
+        const activateTab = tab => {
+            tabs.forEach(candidate => {
+                const selected = candidate === tab;
+                candidate.setAttribute("aria-selected", String(selected));
+                candidate.tabIndex = selected ? 0 : -1;
+                const content = document.getElementById(candidate.getAttribute("aria-controls"));
+                if (content) content.hidden = !selected;
+            });
+        };
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener("click", () => activateTab(tab));
+            tab.addEventListener("keydown", event => {
+                if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+                event.preventDefault();
+                const direction = event.key === "ArrowRight" ? 1 : -1;
+                const next = tabs[(index + direction + tabs.length) % tabs.length];
+                activateTab(next);
+                next.focus();
+            });
+        });
+    });
+});
 
 /* =====================================================
    DEBOUNCE
@@ -204,6 +301,7 @@ async function shareLogisticsDeal(type, name, inputs, results) {
             body: JSON.stringify({
                 shareId: `share_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
                 type,
+                title: name,
                 inputs,
                 results: sharedResults,
                 meta: { title: name, createdBy: "Sandile" },
@@ -275,6 +373,36 @@ function downloadLogisticsCsv(filename, inputs, results) {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function logisticsReportRows(values, excluded = new Set()) {
+    return Object.entries(values || []).flatMap(([key, value]) => {
+        if (excluded.has(key) || value == null) return [];
+        const label = key
+            .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+            .replace(/[_-]+/g, " ")
+            .replace(/\b\w/g, character => character.toUpperCase());
+        if (["string", "number", "boolean"].includes(typeof value)) {
+            return [[label, value]];
+        }
+        if (Array.isArray(value)) {
+            if (value.every(item => ["string", "number", "boolean"].includes(typeof item))) {
+                return [[label, value.join(", ")]];
+            }
+            return [];
+        }
+        if (typeof value === "object") {
+            return Object.entries(value).flatMap(([childKey, childValue]) => {
+                if (childValue == null || !["string", "number", "boolean"].includes(typeof childValue)) return [];
+                const childLabel = childKey
+                    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+                    .replace(/[_-]+/g, " ")
+                    .replace(/\b\w/g, character => character.toUpperCase());
+                return [[`${label} - ${childLabel}`, childValue]];
+            });
+        }
+        return [];
+    });
+}
+
 function bindLogisticsActions(type, ids, getLatest) {
     const latest = () => {
         const state = getLatest();
@@ -327,8 +455,47 @@ function bindLogisticsActions(type, ids, getLatest) {
         const state = latest();
         if (state) downloadLogisticsCsv(`${type}-report.csv`, state.inputs, state.results);
     });
-    $(ids.report)?.addEventListener("click", () => {
-        if (latest()) window.print();
+    $(ids.report)?.addEventListener("click", async () => {
+        const state = latest();
+        if (!state) return;
+
+        const name = window.logisticsScenarioName || ids.name;
+        const reportTitles = {
+            "logistics-operations": "Monthly Logistics Operations Report",
+            "logistics-shipment": "Shipment Risk & Pricing Report",
+            "logistics-freight": "Freight Import / Export Report"
+        };
+        const excluded = new Set([
+            "steps",
+            "flags",
+            "financialSummary",
+            "profitability",
+            "priorityActions",
+            "costAnalysis",
+            "pricingStrategy",
+            "breakEvenAnalysis",
+            "annualOutlook"
+        ]);
+
+        try {
+            await window.SandileReportPdf.download({
+                projectName: name,
+                reportTitle: reportTitles[type] || "Logistics Decision Report",
+                date: new Date().toLocaleDateString("en-ZA", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                }),
+                sections: [
+                    { title: "Logistics Inputs", rows: logisticsReportRows(state.inputs) },
+                    { title: "Calculated Results", rows: logisticsReportRows(state.results, excluded) }
+                ],
+                filename: name
+            });
+        } catch (error) {
+            console.error("Could not generate logistics PDF report:", error);
+            alert("The logistics PDF report could not be generated. Please try again.");
+        }
     });
 }
 

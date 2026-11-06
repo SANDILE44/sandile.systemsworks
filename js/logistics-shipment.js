@@ -62,9 +62,12 @@ async function runShipment() {
     setText("ship-profit", money(data.profit));
     setText("ship-margin", percent(data.margin));
     setText("ship-min-quote", money(data.recommendedMinQuote));
+    setText("ship-roi", percent(data.totalCost > 0 ? (data.profit / data.totalCost) * 100 : 0));
+    setText("ship-breakeven", money(data.totalCost));
+    setText("ship-run-rate", money(data.profit));
 
-    setText("ship-decision", data.decision || "—");
-    setText("ship-reason", data.reason || "—");
+    setText("ship-risk", data.shipmentRisk || "—");
+    setDecisionBanner("ship-decision", "ship-reason", data.decision, data.reason, data.shipmentRisk, data.profit);
 
     /* ==========================
        STYLING
@@ -86,25 +89,48 @@ async function runShipment() {
             : "margin-low"
     );
 
-    if (data.decision) {
-
+    if (data.shipmentRisk) {
         setClass(
-            $("ship-decision"),
-            `decision-${String(data.decision)
-                .toLowerCase()
-                .replace(/\s+/g, "-")}`
+            $("ship-risk"),
+            `risk-${String(data.shipmentRisk).toLowerCase().replace(/\s+/g, "-")}`
         );
-
     }
 
-    /* ==========================
-       STEP-BY-STEP GUIDANCE
-    ========================== */
-
-    renderSteps(
-        "ship-steps",
-        data.steps || []
-    );
+    const steps = data.steps || [];
+    const findStep = title => steps.find(step => step.step === title);
+    const fuelCost = inputs.distance * inputs.fuelPerKm;
+    renderLogisticsInsights("shipment-insights", {
+        profitability: [
+            findStep("Evaluate Costs"),
+            findStep("Margin Check")
+        ].filter(Boolean),
+        costs: [
+            findStep("Largest Cost Driver"),
+            {
+                title: "Fuel Cost Sensitivity",
+                message: fuelCost > 0
+                    ? `A 10% increase in route fuel cost adds ${money(fuelCost * 0.1)} to shipment costs and reduces profit by the same amount.`
+                    : "Enter route distance and fuel cost per kilometre to calculate fuel sensitivity."
+            },
+            {
+                title: "Duty & Handling Check",
+                message: inputs.duties + inputs.handling > 0
+                    ? `Duties and handling add ${money(inputs.duties + inputs.handling)} to this shipment. Verify these charges are included in the client quote.`
+                    : "Confirm whether this route requires duties or handling charges before finalizing the quote."
+            }
+        ],
+        operations: [
+            findStep("Load Factor Impact"),
+            findStep("Final Risk Assessment")
+        ].filter(Boolean),
+        growth: [
+            findStep("Recommended Minimum Quote"),
+            {
+                title: "Pricing Recommendation",
+                message: `Target a quote of at least ${money(data.recommendedMinQuote)} to meet the required margin and buffer.`
+            }
+        ]
+    });
 
 }
 

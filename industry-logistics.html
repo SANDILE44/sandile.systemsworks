@@ -6,6 +6,7 @@
     <title>Logistics Calculators - Sandile SystemsWorks</title>
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/calculators.css" />
+    <link rel="stylesheet" href="css/logistics-results.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
   </head>
 
@@ -441,181 +442,54 @@ clear margin visibility and operational risk detection.
 
 <!-- ==================== RESULTS ==================== -->
 <div class="output-section">
+  <section class="decision-banner" aria-labelledby="log-status">
+    <div id="log-status" class="decision-badge" role="status">—</div>
+    <p id="log-advice" class="decision-explanation">Enter your monthly figures to see the decision.</p>
+  </section>
 
-    <!-- ==========================
-         DECISION
-    =========================== -->
+  <nav class="quick-action-bar" aria-label="Deal actions">
+    <button id="saveOperationsBtn" class="saveDealBtn"><i data-lucide="save"></i><span>Save Deal</span></button>
+    <button id="shareOperationsBtn" class="saveDealBtn share-theme"><i data-lucide="share-2"></i><span>Share Deal</span></button>
+    <button id="compareOperationsBtn" class="saveDealBtn"><i data-lucide="scale"></i><span>Add to Compare</span></button>
+    <button id="exportOperationsCsvBtn" class="exportBtn"><i data-lucide="file-spreadsheet"></i><span>Export CSV</span></button>
+    <button id="exportOperationsReportBtn" class="exportBtn"><i data-lucide="file-text"></i><span>Export Report</span></button>
+    <a class="exportBtn" href="compare.html"><i data-lucide="columns-2"></i><span>Open Comparison</span></a>
+  </nav>
 
-    <h3>Decision</h3>
-
-    <div class="output-group">
-        <div class="output-label">Decision</div>
-        <div class="output-value" id="log-status">—</div>
+  <section class="key-metrics" aria-labelledby="operations-metrics-title">
+    <h3 id="operations-metrics-title">Key Metrics</h3>
+    <div class="metrics-grid">
+      <article class="metric-card"><span>Total Costs</span><strong id="log-total-costs">R0.00</strong></article>
+      <article class="metric-card"><span>Estimated Profit</span><strong id="log-profit">R0.00</strong></article>
+      <article class="metric-card"><span>Margin (%)</span><strong id="log-margin">0.00%</strong></article>
+      <article class="metric-card"><span>ROI (%)</span><strong id="log-roi">0.00%</strong></article>
+      <article class="metric-card"><span>Break-even Quote / Shipment</span><strong id="log-break-even-quote">R0.00</strong></article>
+      <article class="metric-card"><span>Profit Run-Rate</span><strong id="log-profit-run-rate">R0.00 / month</strong><small id="log-profit-per-shipment">R0.00 / shipment</small></article>
     </div>
-
-    <div class="output-group">
-        <div class="output-label">Operational Risk</div>
-        <div class="output-value" id="log-risk-level">—</div>
+    <div class="supporting-metrics">
+      <span>Total Revenue <strong id="log-total-revenue">R0.00</strong></span>
+      <span>Annual Projection <strong id="log-annual-profit">R0.00</strong></span>
+      <span>Monthly Shipments <strong id="log-shipments-output">0</strong></span>
+      <span>Revenue / Shipment <strong id="log-revenue-per-shipment">R0.00</strong></span>
+      <span>Recommended Price <strong id="log-recommended-price">R0.00</strong></span>
+      <span>Risk <strong id="log-risk-level">—</strong></span>
+      <span>Safety <strong id="log-safety">—</strong></span>
     </div>
+  </section>
 
-    <div class="output-group">
-        <div class="output-label">Safety Status</div>
-        <div class="output-value" id="log-safety">—</div>
+  <section class="insights-panel" id="operations-insights" aria-labelledby="operations-insights-title">
+    <h3 id="operations-insights-title">Decision Insights</h3>
+    <div class="insight-tabs" role="tablist" aria-label="Monthly operations insights">
+      <button id="operations-tab-profitability" type="button" role="tab" aria-selected="true" aria-controls="operations-insight-profitability" data-insight-tab="profitability">PROFITABILITY</button>
+      <button id="operations-tab-costs" type="button" role="tab" aria-selected="false" aria-controls="operations-insight-costs" data-insight-tab="costs" tabindex="-1">COSTS</button>
+      <button id="operations-tab-operations" type="button" role="tab" aria-selected="false" aria-controls="operations-insight-operations" data-insight-tab="operations" tabindex="-1">OPERATIONS</button>
+      <button id="operations-tab-growth" type="button" role="tab" aria-selected="false" aria-controls="operations-insight-growth" data-insight-tab="growth" tabindex="-1">GROWTH</button>
     </div>
-
-    <div class="output-group">
-        <div class="output-label">Recommendation</div>
-        <div class="output-value" id="log-advice">—</div>
-    </div>
-
-    <br>
-
-    <!-- ACTION BUTTONS -->
-
-    <div class="action-stack">
-
-        <button id="saveOperationsBtn" class="saveDealBtn">
-            <i data-lucide="save"></i>
-            <span>Save Deal</span>
-        </button>
-
-        <button id="shareOperationsBtn" class="saveDealBtn share-theme">
-            <i data-lucide="share-2"></i>
-            <span>Share Deal</span>
-        </button>
-        <button id="compareOperationsBtn" class="saveDealBtn">
-            <i data-lucide="scale"></i>
-            <span>Compare Deal</span>
-        </button>
-
-    </div>
-
-    <div class="export-group">
-
-        <button id="exportOperationsCsvBtn" class="exportBtn">
-            <i data-lucide="file-spreadsheet"></i>
-            <span>Export CSV</span>
-        </button>
-
-        <button id="exportOperationsReportBtn" class="exportBtn">
-            <i data-lucide="file-text"></i>
-            <span>Export Report</span>
-        </button>
-
-    </div>
-
-    <br>
-
-    <!-- ==========================
-         FINANCIAL SUMMARY
-    =========================== -->
-
-    <h3>Financial Summary</h3>
-
-    <div id="financial-summary" class="cards-container"></div>
-
-    <div class="output-group">
-        <div class="output-label">Total Revenue</div>
-        <div class="output-value" id="log-total-revenue">R0.00</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Total Costs</div>
-        <div class="output-value" id="log-total-costs">R0.00</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Net Profit</div>
-        <div class="output-value" id="log-profit">R0.00</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Annual Profit Projection</div>
-        <div class="output-value" id="log-annual-profit">R0.00</div>
-    </div>
-
-    <br>
-
-    <!-- ==========================
-         PROFITABILITY
-    =========================== -->
-
-    <h3>Profitability</h3>
-
-    <div id="profitability" class="cards-container"></div>
-
-    <div class="output-group">
-        <div class="output-label">Monthly Shipments</div>
-        <div class="output-value" id="log-shipments-output">0</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Revenue per Shipment</div>
-        <div class="output-value" id="log-revenue-per-shipment">R0.00</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Cost per Shipment</div>
-        <div class="output-value" id="log-per-shipment">R0.00</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Profit per Shipment</div>
-        <div class="output-value" id="log-profit-per-shipment">R0.00</div>
-    </div>
-
-    <div class="output-group">
-        <div class="output-label">Recommended Price</div>
-        <div class="output-value" id="log-recommended-price">R0.00</div>
-    </div>
-
-    <br>
-
-    <!-- ==========================
-         ANALYSIS
-    =========================== -->
-
-    <details class="analysis-dropdown">
-        <summary>Priority Actions</summary>
-        <div id="priority-actions"></div>
-    </details>
-
-    <details class="analysis-dropdown">
-        <summary>Cost Analysis</summary>
-        <div id="cost-analysis"></div>
-    </details>
-
-    <details class="analysis-dropdown">
-        <summary>Pricing Strategy</summary>
-        <div id="pricing-strategy"></div>
-    </details>
-
-    <details class="analysis-dropdown">
-        <summary>Break-even Analysis</summary>
-        <div id="break-even-analysis"></div>
-    </details>
-
-    <details class="analysis-dropdown">
-        <summary>Annual Outlook</summary>
-        <div id="annual-outlook"></div>
-    </details>
-
-    <br>
-
-    <!-- ==========================
-         STEP-BY-STEP GUIDANCE
-    =========================== -->
-
-  <details class="analysis-dropdown" open>
-
-    <summary>Step-by-Step Guidance</summary>
-
-    <ol id="log-steps" class="steps-list"></ol>
-
-</details>
-
-
-
+    <div id="operations-insight-profitability" class="insight-content" role="tabpanel" aria-labelledby="operations-tab-profitability"></div>
+    <div id="operations-insight-costs" class="insight-content" role="tabpanel" aria-labelledby="operations-tab-costs" hidden></div>
+    <div id="operations-insight-operations" class="insight-content" role="tabpanel" aria-labelledby="operations-tab-operations" hidden></div>
+    <div id="operations-insight-growth" class="insight-content" role="tabpanel" aria-labelledby="operations-tab-growth" hidden></div>
+  </section>
 </div> <!-- output-section -->
 </div> <!-- calculator-grid -->
 </div> <!-- operations-panel -->
@@ -851,81 +725,49 @@ Reset All
 
 <!-- ==================== SHIPMENT OUTPUTS ==================== -->
 <div class="output-section">
+  <section class="decision-banner" aria-labelledby="ship-decision">
+    <div id="ship-decision" class="decision-badge" role="status">—</div>
+    <p id="ship-reason" class="decision-explanation">Enter shipment details to see the decision.</p>
+  </section>
 
-   <!-- DECISION SUPPORT -->
-  <div class="output-group">
-    <div class="output-label">Decision</div>
-    <div class="output-value" id="ship-decision">—</div>
-  </div>
-  <div class="output-group">
-    <div class="output-label">Decision Explanation</div>
-    <div class="output-value" id="ship-reason">—</div>
-  </div>
-  
-  <!-- PRIMARY ACTIONS -->
-<br>
-<div class="action-stack">
-  <button id="saveShipmentBtn" class="saveDealBtn">
-    <i data-lucide="save"></i>
-    <span>Save Deal</span>
-  </button>
+  <nav class="quick-action-bar" aria-label="Deal actions">
+    <button id="saveShipmentBtn" class="saveDealBtn"><i data-lucide="save"></i><span>Save Deal</span></button>
+    <button id="shareShipmentBtn" class="saveDealBtn share-theme"><i data-lucide="share-2"></i><span>Share Deal</span></button>
+    <button id="compareShipmentBtn" class="saveDealBtn"><i data-lucide="scale"></i><span>Add to Compare</span></button>
+    <button id="exportShipmentCsvBtn" class="exportBtn"><i data-lucide="file-spreadsheet"></i><span>Export CSV</span></button>
+    <button id="exportShipmentReportBtn" class="exportBtn"><i data-lucide="file-text"></i><span>Export Report</span></button>
+    <a class="exportBtn" href="compare.html"><i data-lucide="columns-2"></i><span>Open Comparison</span></a>
+  </nav>
 
-  <button id="shareShipmentBtn" class="saveDealBtn share-theme">
-    <i data-lucide="share-2"></i>
-    <span>Share Deal</span>
-  </button>
-  <button id="compareShipmentBtn" class="saveDealBtn">
-    <i data-lucide="scale"></i>
-    <span>Compare Deal</span>
-  </button>
-</div>
+  <section class="key-metrics" aria-labelledby="shipment-metrics-title">
+    <h3 id="shipment-metrics-title">Key Metrics</h3>
+    <div class="metrics-grid">
+      <article class="metric-card"><span>Total Costs</span><strong id="ship-total-cost">R0.00</strong></article>
+      <article class="metric-card"><span>Estimated Profit</span><strong id="ship-profit">R0.00</strong></article>
+      <article class="metric-card"><span>Margin (%)</span><strong id="ship-margin">0.00%</strong></article>
+      <article class="metric-card"><span>ROI (%)</span><strong id="ship-roi">0.00%</strong></article>
+      <article class="metric-card"><span>Break-even Quote</span><strong id="ship-breakeven">R0.00</strong></article>
+      <article class="metric-card"><span>Profit Run-Rate / Shipment</span><strong id="ship-run-rate">R0.00</strong></article>
+    </div>
+    <div class="supporting-metrics">
+      <span>Recommended Minimum Quote <strong id="ship-min-quote">R0.00</strong></span>
+      <span>Operational Risk <strong id="ship-risk">—</strong></span>
+    </div>
+  </section>
 
-<!-- SECONDARY EXPORTS -->
-<div class="export-group">
-  <button id="exportShipmentCsvBtn" class="exportBtn">
-    <i data-lucide="file-spreadsheet"></i>
-    <span>Export CSV</span>
-  </button>
-
-  <button id="exportShipmentReportBtn" class="exportBtn">
-    <i data-lucide="file-text"></i>
-    <span>Export Report</span>
-  </button>
-</div>
-<br>
-  <h3>Shipment Results</h3>
-
-  <!-- FINANCIAL METRICS -->
-  <div class="output-group">
-    <div class="output-label">Total Shipment Cost</div>
-    <div class="output-value" id="ship-total-cost">0.00</div>
-  </div>
-  <div class="output-group">
-    <div class="output-label">Estimated Profit</div>
-    <div class="output-value" id="ship-profit">0.00</div>
-  </div>
-  <div class="output-group">
-    <div class="output-label">Profit Margin</div>
-    <div class="output-value" id="ship-margin">0.00%</div>
-  </div>
-  <div class="output-group">
-    <div class="output-label">Recommended Minimum Quote</div>
-    <div class="output-value" id="ship-min-quote">0.00</div>
-  </div>
-
- 
-
-  <!-- STEP-BY-STEP GUIDANCE -->
-  <details class="analysis-dropdown">
-
-    <summary>Step-by-Step Guidance</summary>
-
-    <ol id="ship-steps" class="steps-list"></ol>
-
-</details>
-
-
-
+  <section class="insights-panel" id="shipment-insights" aria-labelledby="shipment-insights-title">
+    <h3 id="shipment-insights-title">Decision Insights</h3>
+    <div class="insight-tabs" role="tablist" aria-label="Shipment insights">
+      <button id="shipment-tab-profitability" type="button" role="tab" aria-selected="true" aria-controls="shipment-insight-profitability" data-insight-tab="profitability">PROFITABILITY</button>
+      <button id="shipment-tab-costs" type="button" role="tab" aria-selected="false" aria-controls="shipment-insight-costs" data-insight-tab="costs" tabindex="-1">COSTS</button>
+      <button id="shipment-tab-operations" type="button" role="tab" aria-selected="false" aria-controls="shipment-insight-operations" data-insight-tab="operations" tabindex="-1">OPERATIONS</button>
+      <button id="shipment-tab-growth" type="button" role="tab" aria-selected="false" aria-controls="shipment-insight-growth" data-insight-tab="growth" tabindex="-1">GROWTH</button>
+    </div>
+    <div id="shipment-insight-profitability" class="insight-content" role="tabpanel" aria-labelledby="shipment-tab-profitability"></div>
+    <div id="shipment-insight-costs" class="insight-content" role="tabpanel" aria-labelledby="shipment-tab-costs" hidden></div>
+    <div id="shipment-insight-operations" class="insight-content" role="tabpanel" aria-labelledby="shipment-tab-operations" hidden></div>
+    <div id="shipment-insight-growth" class="insight-content" role="tabpanel" aria-labelledby="shipment-tab-growth" hidden></div>
+  </section>
 </div> <!-- output-section -->
 </div> <!-- calculator-grid -->
 </div> <!-- shipment-panel -->
@@ -1011,84 +853,51 @@ Reset All
 
     <!-- OUTPUTS -->
     <div class="output-section">
+      <section class="decision-banner" aria-labelledby="freight-decision">
+        <div id="freight-decision" class="decision-badge" role="status">—</div>
+        <p id="freight-reason" class="decision-explanation">Enter freight details to see the decision.</p>
+      </section>
 
-      <h3>Freight Results</h3>
+      <nav class="quick-action-bar" aria-label="Deal actions">
+        <button id="saveFreightBtn" class="saveDealBtn" type="button"><i data-lucide="save"></i><span>Save Deal</span></button>
+        <button id="shareFreightBtn" class="saveDealBtn share-theme" type="button"><i data-lucide="share-2"></i><span>Share Deal</span></button>
+        <button id="compareFreightBtn" class="saveDealBtn" type="button"><i data-lucide="scale"></i><span>Add to Compare</span></button>
+        <button id="exportFreightCsvBtn" class="exportBtn" type="button"><i data-lucide="file-spreadsheet"></i><span>Export CSV</span></button>
+        <button id="exportFreightReportBtn" class="exportBtn" type="button"><i data-lucide="file-text"></i><span>Export Report</span></button>
+        <a class="exportBtn" href="compare.html"><i data-lucide="columns-2"></i><span>Open Comparison</span></a>
+      </nav>
 
-      <div class="action-stack">
-        <button id="saveFreightBtn" class="saveDealBtn" type="button">
-          <i data-lucide="save"></i>
-          <span>Save Deal</span>
-        </button>
-        <button id="shareFreightBtn" class="saveDealBtn share-theme" type="button">
-          <i data-lucide="share-2"></i>
-          <span>Share Deal</span>
-        </button>
-        <button id="compareFreightBtn" class="saveDealBtn" type="button">
-          <i data-lucide="scale"></i>
-          <span>Compare Deal</span>
-        </button>
-      </div>
-      <div class="export-group">
-        <button id="exportFreightCsvBtn" class="exportBtn" type="button">
-          <i data-lucide="file-spreadsheet"></i>
-          <span>Export CSV</span>
-        </button>
-        <button id="exportFreightReportBtn" class="exportBtn" type="button">
-          <i data-lucide="file-text"></i>
-          <span>Export Report</span>
-        </button>
-      </div>
+      <section class="key-metrics" aria-labelledby="freight-metrics-title">
+        <h3 id="freight-metrics-title">Key Metrics</h3>
+        <div class="metrics-grid">
+          <article class="metric-card"><span>Total Costs</span><strong id="freight-total-cost">R0.00</strong></article>
+          <article class="metric-card"><span>Estimated Profit</span><strong id="freight-profit">R0.00</strong></article>
+          <article class="metric-card"><span>Margin (%)</span><strong id="freight-margin">0.00%</strong></article>
+          <article class="metric-card"><span>ROI (%)</span><strong id="freight-roi">0.00%</strong></article>
+          <article class="metric-card"><span>Break-even Quote</span><strong id="freight-breakeven">R0.00</strong></article>
+          <article class="metric-card"><span>Profit Run-Rate / Shipment</span><strong id="freight-run-rate">R0.00</strong></article>
+        </div>
+        <div class="supporting-metrics">
+          <span>Recommended Quote <strong id="freight-recommended-quote">R0.00</strong></span>
+          <span>Risk <strong id="freight-risk">—</strong></span>
+          <span>Insurance Cost <strong id="freight-insurance-cost">R0.00</strong></span>
+          <span>Duty Cost <strong id="freight-duties">R0.00</strong></span>
+        </div>
+      </section>
 
-      <div class="output-group">
-        <div class="output-label">Insurance Cost</div>
-        <div class="output-value" id="freight-insurance-cost">0.00</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Duty Cost</div>
-        <div class="output-value" id="freight-duties">0.00</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Total Logistics Cost</div>
-        <div class="output-value" id="freight-total-cost">0.00</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Estimated Profit</div>
-        <div class="output-value" id="freight-profit">0.00</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Profit Margin</div>
-        <div class="output-value" id="freight-margin">0.00%</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Break-even Quote</div>
-        <div class="output-value" id="freight-breakeven">0.00</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Decision</div>
-        <div class="output-value" id="freight-decision">—</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Decision Explanation</div>
-        <div class="output-value" id="freight-reason">—</div>
-      </div>
-
-      <div class="output-group">
-        <div class="output-label">Risk Level</div>
-        <div class="output-value" id="freight-risk">—</div>
-      </div>
-
-      <div class="steps-section">
-        <h3>Step-by-Step Guidance</h3>
-        <ol id="freight-steps" class="steps-list"></ol>
-      </div>
-
+      <section class="insights-panel" id="freight-insights" aria-labelledby="freight-insights-title">
+        <h3 id="freight-insights-title">Decision Insights</h3>
+        <div class="insight-tabs" role="tablist" aria-label="Freight insights">
+          <button id="freight-tab-profitability" type="button" role="tab" aria-selected="true" aria-controls="freight-insight-profitability" data-insight-tab="profitability">PROFITABILITY</button>
+          <button id="freight-tab-costs" type="button" role="tab" aria-selected="false" aria-controls="freight-insight-costs" data-insight-tab="costs" tabindex="-1">COSTS</button>
+          <button id="freight-tab-operations" type="button" role="tab" aria-selected="false" aria-controls="freight-insight-operations" data-insight-tab="operations" tabindex="-1">OPERATIONS</button>
+          <button id="freight-tab-growth" type="button" role="tab" aria-selected="false" aria-controls="freight-insight-growth" data-insight-tab="growth" tabindex="-1">GROWTH</button>
+        </div>
+        <div id="freight-insight-profitability" class="insight-content" role="tabpanel" aria-labelledby="freight-tab-profitability"></div>
+        <div id="freight-insight-costs" class="insight-content" role="tabpanel" aria-labelledby="freight-tab-costs" hidden></div>
+        <div id="freight-insight-operations" class="insight-content" role="tabpanel" aria-labelledby="freight-tab-operations" hidden></div>
+        <div id="freight-insight-growth" class="insight-content" role="tabpanel" aria-labelledby="freight-tab-growth" hidden></div>
+      </section>
     </div>
 
   </div>
@@ -1238,6 +1047,7 @@ Reset All
 
 <script src="js/button-loading.js"></script>
 <script src="js/compare.js"></script>
+<script src="js/reportPdf.js"></script>
 <script src="js/logistics.js"></script>
 <script src="js/logistics-monthly.js"></script>
 <script src="js/logistics-shipment.js"></script>

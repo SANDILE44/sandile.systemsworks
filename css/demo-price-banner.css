@@ -1,0 +1,135 @@
+.demo-price-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  flex-wrap: wrap;
+  padding: 1rem max(1.25rem, calc((100vw - 1100px) / 2));
+  border-bottom: 1px solid rgba(0, 180, 216, 0.5);
+  background: linear-gradient(105deg, #061326 0%, #0c3146 52%, #082f49 100%);
+  color: #f8fafc;
+  text-align: left;
+}
+
+.demo-price-banner .banner-content {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.demo-price-banner .banner-badge {
+  width: fit-content;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  border-radius: 999px;
+  background: rgba(8, 145, 178, 0.16);
+  color: #67e8f9;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.demo-price-banner .banner-headline,
+.demo-price-banner .banner-subtext {
+  margin: 0;
+  color: inherit;
+}
+
+.demo-price-banner .banner-headline {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.demo-price-banner .highlight-price {
+  margin: 0 0.25rem;
+  color: #67e8f9;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.demo-price-banner .original-price {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: line-through;
+  text-decoration-color: #fb7185;
+}
+
+.demo-price-banner .banner-subtext {
+  color: #cbd5e1;
+  font-size: 0.78rem;
+}
+
+.demo-price-banner .banner-subtext strong {
+  color: #fff;
+}
+
+.demo-price-banner .banner-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.demo-price-banner .banner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.demo-price-banner .primary-btn {
+  background: #00b4d8;
+  color: #041019;
+}
+
+.demo-price-banner .primary-btn:hover {
+  background: #67e8f9;
+}
+
+.demo-price-banner .whatsapp-btn {
+  border-color: rgba(134, 239, 172, 0.65);
+  background: rgba(22, 101, 52, 0.28);
+  color: #dcfce7;
+}
+
+.demo-price-banner .whatsapp-btn:hover {
+  border-color: #86efac;
+  background: #166534;
+  color: #fff;
+}
+
+.demo-price-banner .banner-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .demo-price-banner {
+    justify-content: center;
+    padding: 0.85rem 1rem;
+    text-align: center;
+  }
+
+  .demo-price-banner .banner-content {
+    justify-items: center;
+  }
+
+  .demo-price-banner .banner-actions {
+    width: 100%;
+  }
+
+  .demo-price-banner .banner-btn {
+    flex: 1 1 145px;
+  }
+}

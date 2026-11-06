@@ -325,94 +325,55 @@
       day: 'numeric'
     });
 
-    if ($("print-project-name")) $("print-project-name").textContent = projectName;
-    if ($("print-date")) $("print-date").textContent = dateStr;
-
     try {
-      if (!window.jspdf?.jsPDF) {
-        const pdfScript = document.createElement("script");
-        pdfScript.src = "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js";
-        pdfScript.onload = () => generateRestaurantPdf(projectName, dateStr);
-        pdfScript.onerror = () => window.print();
-        document.head.appendChild(pdfScript);
-        return;
-      }
-
-      generateRestaurantPdf(projectName, dateStr);
+      await generateRestaurantPdf(projectName, dateStr);
     } catch (err) {
       console.error("PDF generation failed:", err);
-      window.print();
+      alert("The restaurant PDF report could not be generated. Please try again.");
     }
   }
 
   function generateRestaurantPdf(projectName, dateStr) {
-    const { jsPDF } = window.jspdf;
     const i = getInputs();
     const d = latestData;
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
-    const margin = 40;
-    let y = 56;
-
-    doc.setFillColor(2, 6, 23);
-    doc.rect(0, 0, 595, 842, "F");
-    doc.setTextColor(229, 231, 235);
-    doc.setFontSize(22);
-    doc.text("Sandile SystemsWorks", margin, y);
-    doc.setFontSize(12);
-    doc.setTextColor(148, 163, 184);
-    doc.text("Restaurant Intelligence & Profitability Report", margin, y + 18);
-    doc.setTextColor(34, 197, 94);
-    doc.text(projectName, margin, y + 38, { maxWidth: 515 });
-    doc.setTextColor(148, 163, 184);
-    doc.text(dateStr, margin, y + 56);
-    doc.setDrawColor(0, 180, 216);
-    doc.line(margin, y + 68, 555, y + 68);
-
-    y = y + 108;
-    const rows = [
-      ["Tables", i.tables],
-      ["Covers per table", i.coversPerTable],
-      ["Average check", money(i.avgCheck)],
-      ["Food cost %", percent(i.foodPct)],
-      ["Labor cost", money(i.labor)],
-      ["Fixed costs", money(i.fixed)],
-      ["Operating days", i.days],
-      ["Daily covers", d.dailyCovers ?? 0],
-      ["Monthly revenue", money(d.monthlyRevenue)],
-      ["Food cost", money(d.foodCost)],
-      ["Total costs", money(d.totalCosts)],
-      ["Profit", money(d.profit)],
-      ["Margin", percent(d.margin)],
-      ["ROI", percent(d.roi)],
-      ["Break-even covers", d.breakevenCovers ?? 0],
-      ["Profit per cover", money(d.profitPerCover)],
-      ["Monthly profit", money(d.monthlyProfit)],
-      ["Annual profit", money(d.annualProfit)],
-      ["Decision", d.decision || "—"],
-      ["Advice", d.advice || "—"]
-    ];
-
-    rows.forEach(([label, value]) => {
-      if (y > 760) {
-        doc.addPage();
-        y = 56;
-      }
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(10);
-      doc.text(String(label), margin, y);
-      doc.setTextColor(229, 231, 235);
-      doc.setFontSize(11);
-      doc.text(String(value), margin + 180, y, { maxWidth: 320 });
-      y += 20;
+    return window.SandileReportPdf.download({
+      projectName,
+      reportTitle: "Restaurant Intelligence & Profitability Report",
+      date: dateStr,
+      sections: [
+        {
+          title: "Restaurant Inputs",
+          rows: [
+            ["Tables", i.tables],
+            ["Covers per table", i.coversPerTable],
+            ["Average check", money(i.avgCheck)],
+            ["Food cost", percent(i.foodPct)],
+            ["Labor cost", money(i.labor)],
+            ["Fixed costs", money(i.fixed)],
+            ["Operating days", i.days]
+          ]
+        },
+        {
+          title: "Calculated Results",
+          rows: [
+            ["Daily covers", d.dailyCovers ?? 0],
+            ["Monthly revenue", money(d.monthlyRevenue)],
+            ["Food cost", money(d.foodCost)],
+            ["Total costs", money(d.totalCosts)],
+            ["Profit", money(d.profit)],
+            ["Margin", percent(d.margin)],
+            ["ROI", percent(d.roi)],
+            ["Break-even covers", d.breakevenCovers ?? 0],
+            ["Profit per cover", money(d.profitPerCover)],
+            ["Monthly profit", money(d.monthlyProfit)],
+            ["Annual profit", money(d.annualProfit)],
+            ["Decision", d.decision || "—"],
+            ["Advice", d.advice || "—"]
+          ]
+        }
+      ],
+      filename: projectName || "restaurant"
     });
-
-    const filename = projectName
-      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "")
-      .trim()
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "") || "restaurant";
-    doc.save(`${filename}-report.pdf`);
   }
 
   /* ================= INIT ================= */
