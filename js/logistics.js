@@ -412,7 +412,7 @@ function bindLogisticsActions(type, ids, getLatest) {
         }
         if (ids.inputMap && Object.entries(ids.inputMap).some(([key, id]) => {
             const input = $(id);
-            return input && (Number(input.value) || 0) !== Number(state.inputs[key] || 0);
+            return input && FormattedNumberInput.getNumber(input) !== Number(state.inputs[key] || 0);
         })) {
             alert("Your latest input changes are still being calculated. Please wait, then try again.");
             return null;

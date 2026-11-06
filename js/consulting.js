@@ -33,16 +33,16 @@
   /* ================= INPUTS ================= */
   function getInputs() {
     return {
-      hours: +$("consult-hours")?.value || 0,
-      rate: +$("consult-rate")?.value || 0,
-      expenses: +$("consult-expenses")?.value || 0,
-      labor: +$("consult-labor")?.value || 0,
-      fixed: +$("consult-fixed")?.value || 0,
-      discountPct: +$("consult-discount")?.value || 0,
-      otHours: +$("consult-overtime-hours")?.value || 0,
-      otRate: +$("consult-overtime-rate")?.value || 0,
-      variableCosts: +$("consult-variable-costs")?.value || 0,
-      contingencyPct: +$("consult-contingency")?.value || 0
+      hours: FormattedNumberInput.getNumber($("consult-hours")),
+      rate: FormattedNumberInput.getNumber($("consult-rate")),
+      expenses: FormattedNumberInput.getNumber($("consult-expenses")),
+      labor: FormattedNumberInput.getNumber($("consult-labor")),
+      fixed: FormattedNumberInput.getNumber($("consult-fixed")),
+      discountPct: FormattedNumberInput.getNumber($("consult-discount")),
+      otHours: FormattedNumberInput.getNumber($("consult-overtime-hours")),
+      otRate: FormattedNumberInput.getNumber($("consult-overtime-rate")),
+      variableCosts: FormattedNumberInput.getNumber($("consult-variable-costs")),
+      contingencyPct: FormattedNumberInput.getNumber($("consult-contingency"))
     };
   }
 
@@ -84,6 +84,12 @@
     const data = await api("/api/calculators/consulting/project", "POST", inputs);
 
     if (!data) return;
+    const report = DecisionInsights.analyze({
+      industry: "consulting",
+      revenue: data.revenueAfterDiscount,
+      costs: data.totalCosts,
+      profit: data.profit
+    });
     latestData = data;
     latestInputs = { ...inputs };
 
@@ -98,42 +104,18 @@
 
     $("consult-profit").textContent = money(data.profit);
     $("consult-profit-hour").textContent = money(data.profitPerHour);
-    $("consult-margin").textContent = percent(data.margin);
-    $("consult-roi").textContent = percent(data.roi);
+    $("consult-margin").textContent = report.margin === null ? "—" : percent(report.margin);
+    $("consult-roi").textContent = report.roi === null ? "—" : percent(report.roi);
 
     $("consult-breakeven").textContent = (data.breakevenHours || 0).toFixed(2);
 
     /* ================= STATUS ================= */
-    const statusEl = $("status");
-    const adviceEl = $("decisionAdvice");
-
-    statusEl.textContent = data.decision || "—";
-    adviceEl.textContent = data.advice || "";
-
-    statusEl.className =
-      data.riskLevel === "High" ? "loss"
-      : data.riskLevel === "Medium" ? "neutral"
-      : "profit";
+    DecisionInsights.render($("decisionAdvice"), $("status"), report, data.decision, data.riskLevel);
 
     /* ================= COLORS ================= */
     setMetricColor($("consult-profit"), data.profit);
-    setMetricColor($("consult-margin"), data.margin);
-    setMetricColor($("consult-roi"), data.roi);
-
-    /* ================= STEPS ================= */
-    renderSteps(data.steps);
-  }
-
-  function renderSteps(steps) {
-    const container = $("consult-steps");
-    if (!container || !steps) return;
-
-    container.innerHTML = steps.map((s, i) => `
-      <div class="step">
-        <strong>Step ${i + 1}</strong>
-        <div>${s}</div>
-      </div>
-    `).join("");
+    setMetricColor($("consult-margin"), report.margin);
+    setMetricColor($("consult-roi"), report.roi);
   }
 
   /* ================= EXPORT CSV ================= */
@@ -356,7 +338,6 @@
     $("status").textContent = "—";
     $("status").className = "";
     $("decisionAdvice").textContent = "";
-    $("consult-steps").innerHTML = "";
     
     [
       "consult-revenue","consult-revenue-after-discount",

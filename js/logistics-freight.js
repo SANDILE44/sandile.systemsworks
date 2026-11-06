@@ -12,24 +12,24 @@ async function runFreight() {
 
     const inputs = {
 
-        quote: parseFloat(elQuote.value) || 0,
+        quote: FormattedNumberInput.getNumber(elQuote),
 
-        cargoValue: parseFloat($("freight-cargo-value")?.value) || 0,
-        insuranceRate: parseFloat($("freight-insurance-rate")?.value) || 0,
+        cargoValue: FormattedNumberInput.getNumber($("freight-cargo-value")),
+        insuranceRate: FormattedNumberInput.getNumber($("freight-insurance-rate")),
 
-        freightCost: parseFloat($("freight-cost")?.value) || 0,
-        fuelSurcharge: parseFloat($("freight-fuel-surcharge")?.value) || 0,
+        freightCost: FormattedNumberInput.getNumber($("freight-cost")),
+        fuelSurcharge: FormattedNumberInput.getNumber($("freight-fuel-surcharge")),
 
-        dutyRate: parseFloat($("freight-duty-rate")?.value) || 0,
-        customsFees: parseFloat($("freight-customs-fees")?.value) || 0,
+        dutyRate: FormattedNumberInput.getNumber($("freight-duty-rate")),
+        customsFees: FormattedNumberInput.getNumber($("freight-customs-fees")),
 
-        portFees: parseFloat($("freight-port-fees")?.value) || 0,
-        handlingFees: parseFloat($("freight-handling-fees")?.value) || 0,
+        portFees: FormattedNumberInput.getNumber($("freight-port-fees")),
+        handlingFees: FormattedNumberInput.getNumber($("freight-handling-fees")),
 
-        inlandTransport: parseFloat($("freight-inland-transport")?.value) || 0,
-        tolls: parseFloat($("freight-tolls")?.value) || 0,
+        inlandTransport: FormattedNumberInput.getNumber($("freight-inland-transport")),
+        tolls: FormattedNumberInput.getNumber($("freight-tolls")),
 
-        otherCosts: parseFloat($("freight-other-costs")?.value) || 0
+        otherCosts: FormattedNumberInput.getNumber($("freight-other-costs"))
     };
 
     latestFreightInputs = null;

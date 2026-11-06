@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="js/formatted-input.js"></script>
   <title>Consulting Demo | Sandile SystemsWorks</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/calculators.css" />
@@ -167,12 +168,12 @@
 
     function getInputs() {
       return {
-        hours: Number(document.getElementById('hours').value || 0),
-        rate: Number(document.getElementById('rate').value || 0),
-        expenses: Number(document.getElementById('expenses').value || 0),
-        labor: Number(document.getElementById('labor').value || 0),
-        fixed: Number(document.getElementById('fixed').value || 0),
-        discount: Number(document.getElementById('discount').value || 0)
+        hours: FormattedNumberInput.getNumber(document.getElementById('hours')),
+        rate: FormattedNumberInput.getNumber(document.getElementById('rate')),
+        expenses: FormattedNumberInput.getNumber(document.getElementById('expenses')),
+        labor: FormattedNumberInput.getNumber(document.getElementById('labor')),
+        fixed: FormattedNumberInput.getNumber(document.getElementById('fixed')),
+        discount: FormattedNumberInput.getNumber(document.getElementById('discount'))
       };
     }
 

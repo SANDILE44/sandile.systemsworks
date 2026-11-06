@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="js/formatted-input.js"></script>
   <title>Manufacturing Demo | Sandile SystemsWorks</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/calculators.css" />
@@ -237,12 +238,12 @@
 
     function getInputs() {
       return {
-        units: Number(document.getElementById('units').value || 0),
-        price: Number(document.getElementById('price').value || 0),
-        material: Number(document.getElementById('material').value || 0),
-        labor: Number(document.getElementById('labor').value || 0),
-        fixed: Number(document.getElementById('fixed').value || 0),
-        operational: Number(document.getElementById('operational').value || 0)
+        units: FormattedNumberInput.getNumber(document.getElementById('units')),
+        price: FormattedNumberInput.getNumber(document.getElementById('price')),
+        material: FormattedNumberInput.getNumber(document.getElementById('material')),
+        labor: FormattedNumberInput.getNumber(document.getElementById('labor')),
+        fixed: FormattedNumberInput.getNumber(document.getElementById('fixed')),
+        operational: FormattedNumberInput.getNumber(document.getElementById('operational'))
       };
     }
 

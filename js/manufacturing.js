@@ -5,6 +5,7 @@
   let debounceTimer;
   let latestData = null;
   let latestInputs = null;
+  let latestDecisionReport = null;
 
   function getProjectName() {
     return $("mfg-project-name")?.value.trim() || "Manufacturing project";
@@ -28,12 +29,12 @@
   /* ================= INPUTS ================= */
   function getInputs() {
     return {
-      units: +$("mfg-units")?.value || 0,
-      price: +$("mfg-price")?.value || 0,
-      material: +$("mfg-material")?.value || 0,
-      labor: +$("mfg-labor")?.value || 0,
-      fixed: +$("mfg-fixed")?.value || 0,
-      operational: +$("mfg-operational")?.value || 0
+      units: FormattedNumberInput.getNumber($("mfg-units")),
+      price: FormattedNumberInput.getNumber($("mfg-price")),
+      material: FormattedNumberInput.getNumber($("mfg-material")),
+      labor: FormattedNumberInput.getNumber($("mfg-labor")),
+      fixed: FormattedNumberInput.getNumber($("mfg-fixed")),
+      operational: FormattedNumberInput.getNumber($("mfg-operational"))
     };
   }
 
@@ -53,20 +54,19 @@
   function runManufacturing() {
     const i = getInputs();
 
-    if (i.units <= 0 || i.price <= 0) {
-      latestData = null;
-      latestInputs = null;
-      renderEmpty();
-      return;
-    }
-
     const revenue = i.units * i.price;
     const materialTotal = i.units * i.material;
     const totalCosts = materialTotal + i.labor + i.fixed + i.operational;
     const profit = revenue - totalCosts;
 
-    const margin = safeDivide(profit, revenue) * 100;
-    const roi = safeDivide(profit, totalCosts) * 100;
+    latestDecisionReport = DecisionInsights.analyze({
+      industry: "manufacturing",
+      revenue,
+      costs: totalCosts,
+      profit
+    });
+    const margin = latestDecisionReport.margin ?? 0;
+    const roi = latestDecisionReport.roi ?? 0;
 
     const costPerUnit = safeDivide(totalCosts, i.units);
     const profitPerUnit = safeDivide(profit, i.units);
@@ -75,20 +75,6 @@
       (i.price - i.material) > 0
         ? Math.ceil((i.labor + i.fixed + i.operational) / (i.price - i.material))
         : 0;
-
-    let status = "PROFIT";
-    let action = "Healthy operation. Focus on scaling production.";
-
-    if (profit <= 0) {
-      status = "LOSS";
-      action = "Costs exceed revenue — adjust unit pricing or reduce overhead.";
-    } else if (margin < 10) {
-      status = "RISK";
-      action = "Thin margins detected — high risk if material costs fluctuate.";
-    } else if (margin < 20) {
-      status = "NEUTRAL";
-      action = "Stable performance. Look for labor or material efficiencies.";
-    }
 
     latestData = {
       revenue,
@@ -99,14 +85,10 @@
       costPerUnit,
       profitPerUnit,
       breakEvenUnits,
-      status,
-      action,
-      steps: [
-        `Revenue generated from ${i.units} units at R${i.price} each.`,
-        `Direct Material Costs totaled R${materialTotal.toFixed(2)}.`,
-        `Total Overhead (Labor + Fixed + OpEx) is R${(i.labor + i.fixed + i.operational).toFixed(2)}.`,
-        `You need to sell at least ${breakEvenUnits} units to cover all costs.`
-      ]
+      status: latestDecisionReport.recommendation,
+      action: latestDecisionReport.lines.join(" "),
+      riskLevel: latestDecisionReport.level === "danger" ? "High" :
+        latestDecisionReport.level === "caution" ? "Medium" : "Low"
     };
     latestInputs = { ...i };
 
@@ -120,30 +102,13 @@
     $("profit").textContent = money(d.profit);
     $("costPerUnit").textContent = money(d.costPerUnit);
     $("profitPerUnit").textContent = money(d.profitPerUnit);
-    $("margin").textContent = percent(d.margin);
-    $("roi").textContent = percent(d.roi);
+    $("margin").textContent = latestDecisionReport.margin === null ? "—" : percent(d.margin);
+    $("roi").textContent = latestDecisionReport.roi === null ? "—" : percent(d.roi);
     $("breakeven").textContent = d.breakEvenUnits;
     [[$("profit"), d.profit], [$("margin"), d.margin], [$("roi"), d.roi]]
       .forEach(([element, value]) => setMetricColor(element, value));
 
-    const status = $("status");
-    status.textContent = d.status;
-    $("decisionAdvice").textContent = d.action;
-
-    status.className = ""; // clear
-    if (d.status === "PROFIT") status.classList.add("profit");
-    else if (d.status === "LOSS") status.classList.add("loss");
-    else status.classList.add("neutral");
-
-    // Render Steps
-    const stepsContainer = $("stepsContainer");
-    if (stepsContainer && d.steps) {
-      stepsContainer.innerHTML = d.steps.map((s, idx) => `
-        <div class="step">
-          <strong>Step ${idx + 1}:</strong> ${s}
-        </div>
-      `).join("");
-    }
+    DecisionInsights.render($("decisionAdvice"), $("status"), latestDecisionReport);
   }
 
   function setMetricColor(element, value) {
@@ -164,8 +129,9 @@
         element.classList.remove("positive", "negative", "caution");
       });
     $("status").textContent = "—";
+    $("status").className = "";
+    delete $("status").dataset.riskLevel;
     $("decisionAdvice").textContent = "";
-    if ($("stepsContainer")) $("stepsContainer").innerHTML = "";
   }
 
   /* ================= ACTIONS ================= */
@@ -174,6 +140,7 @@
     if ($("mfg-project-name")) $("mfg-project-name").value = "";
     latestData = null;
     latestInputs = null;
+    latestDecisionReport = null;
     renderEmpty();
   }
 

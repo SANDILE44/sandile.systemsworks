@@ -32,12 +32,12 @@
   /* ================= INPUTS ================= */
   function getInputs() {
     return {
-      value: +$("const-value")?.value || 0,
-      material: +$("const-material")?.value || 0,
-      laborMonthly: +$("const-labor")?.value || 0,
-      equipmentMonthly: +$("const-equipment")?.value || 0,
-      fixedMonthly: +$("const-fixed")?.value || 0,
-      months: +$("const-duration")?.value || 0
+      value: FormattedNumberInput.getNumber($("const-value")),
+      material: FormattedNumberInput.getNumber($("const-material")),
+      laborMonthly: FormattedNumberInput.getNumber($("const-labor")),
+      equipmentMonthly: FormattedNumberInput.getNumber($("const-equipment")),
+      fixedMonthly: FormattedNumberInput.getNumber($("const-fixed")),
+      months: FormattedNumberInput.getNumber($("const-duration"))
     };
   }
 
@@ -54,16 +54,6 @@
   }
 
   /* ================= COLOR ================= */
-  function setStatusColor(el, riskLevel) {
-    if (!el) return;
-
-    el.classList.remove("positive", "negative", "caution");
-
-    if (riskLevel === "High") el.classList.add("negative");
-    else if (riskLevel === "Medium") el.classList.add("caution");
-    else el.classList.add("positive");
-  }
-
   /* ================= LOAD EDIT (FIXED LIFECYCLE) ================= */
   function loadEditDeal() {
     const compareScenario = window.DealCompare?.getEditingScenario("construction");
@@ -121,8 +111,6 @@
     if (!token) return;
 
     const inputs = getInputs();
-    if (inputs.value === 0) return;
-
     try {
       const res = await fetch(`${API_BASE}/api/calculators/construction/project`, {
         method: "POST",
@@ -136,6 +124,12 @@
       if (!res.ok) return;
 
       const d = await res.json();
+      const report = DecisionInsights.analyze({
+        industry: "construction",
+        revenue: d.value ?? d.revenue ?? inputs.value,
+        costs: d.totalCosts,
+        profit: d.profit
+      });
       latestData = d;
       latestInputs = { ...inputs };
 
@@ -150,25 +144,18 @@
       const marginEl = $("const-margin");
       const roiEl = $("const-roi");
 
-      marginEl.textContent = percent(d.margin);
-      roiEl.textContent = percent(d.roi);
+      marginEl.textContent = report.margin === null ? "—" : percent(report.margin);
+      roiEl.textContent = report.roi === null ? "—" : percent(report.roi);
 
   // Apply color logic factoring in the risk level for percentages
       applyMetricColoring($("const-profit"), d.profit, d.riskLevel, false);
-      applyMetricColoring(marginEl, d.margin, d.riskLevel, true);
-      applyMetricColoring(roiEl, d.roi, d.riskLevel, true);
+      applyMetricColoring(marginEl, report.margin, d.riskLevel, true);
+      applyMetricColoring(roiEl, report.roi, d.riskLevel, true);
       applyMetricColoring($("const-monthly-profit"), d.monthlyProfit, d.riskLevel, false);
       applyMetricColoring($("const-annual-profit"), d.annualProfit, d.riskLevel, false);
 
       // 3. Inject Decision Status
-      const statusEl = $("decision-status");
-      if (statusEl) {
-        statusEl.textContent = d.decision || "—";
-        setStatusColor(statusEl, d.riskLevel);
-      }
-      
-      if ($("decision-advice")) $("decision-advice").textContent = d.advice || "";
-
+      DecisionInsights.render($("decision-advice"), $("decision-status"), report, d.decision, d.riskLevel);
       renderInsights(d.insights || {});
 
     } catch (err) {
@@ -357,6 +344,7 @@ async function saveDeal(e) {
     latestInputs = null;
 
     $("decision-status").textContent = "—";
+    $("decision-status").className = "";
     $("decision-advice").textContent = "";
     $("const-insights").innerHTML = "";
 

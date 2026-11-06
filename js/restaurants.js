@@ -62,13 +62,13 @@
   /* ================= INPUTS ================= */
   function getInputs() {
     return {
-      tables: +$("tables")?.value || 0,
-      coversPerTable: +$("covers")?.value || 0,
-      avgCheck: +$("check")?.value || 0,
-      foodPct: +$("foodPercent")?.value || 0,
-      labor: +$("labor")?.value || 0,
-      fixed: +$("fixed")?.value || 0,
-      days: +$("days")?.value || 0
+      tables: FormattedNumberInput.getNumber($("tables")),
+      coversPerTable: FormattedNumberInput.getNumber($("covers")),
+      avgCheck: FormattedNumberInput.getNumber($("check")),
+      foodPct: FormattedNumberInput.getNumber($("foodPercent")),
+      labor: FormattedNumberInput.getNumber($("labor")),
+      fixed: FormattedNumberInput.getNumber($("fixed")),
+      days: FormattedNumberInput.getNumber($("days"))
     };
   }
 
@@ -76,17 +76,18 @@
   async function runRestaurant() {
     const inputs = getInputs();
     
-    // Only run if we have basic data
-    if (inputs.tables <= 0 || inputs.avgCheck <= 0) return;
-
     const data = await api("/api/calculators/restaurant/operations", "POST", inputs);
     if (!data) return;
 
-    const costs = Number(data.totalCosts) || 0;
-    const roi = data.roi !== null && data.roi !== undefined && data.roi !== "" && Number.isFinite(Number(data.roi))
-      ? Number(data.roi)
-      : costs === 0 ? 0 : (Number(data.profit) || 0) / costs * 100;
-    latestData = { ...data, roi };
+    const report = DecisionInsights.analyze({
+      industry: "restaurant",
+      revenue: data.monthlyRevenue,
+      costs: data.totalCosts,
+      profit: data.profit,
+      foodCost: data.foodCost,
+      laborCost: inputs.labor
+    });
+    latestData = data;
     latestInputs = { ...inputs };
 
     // UI Updates
@@ -95,63 +96,18 @@
     $("foodCost").textContent = money(data.foodCost);
     $("totalCosts").textContent = money(data.totalCosts);
     $("profit").textContent = money(data.profit);
-    $("margin").textContent = percent(data.margin);
-    $("roi").textContent = percent(roi);
+    $("margin").textContent = report.margin === null ? "—" : percent(report.margin);
+    $("roi").textContent = report.roi === null ? "—" : percent(report.roi);
     $("breakeven").textContent = data.breakevenCovers ?? 0;
     $("profitCover").textContent = money(data.profitPerCover);
     $("monthly").textContent = money(data.monthlyProfit);
     $("annual").textContent = money(data.annualProfit);
     $("ratio").textContent = percent(data.costRatio);
 
-    const status = $("status");
-    const advice = $("decisionAdvice");
-
-    status.textContent = data.decision || "—";
-    advice.textContent = data.advice || "";
-
-    // Dynamic Styling
-    status.className = 
-      data.riskLevel === "High" ? "loss" : 
-      data.riskLevel === "Medium" ? "neutral" : "profit";
-
+    DecisionInsights.render($("decisionAdvice"), $("status"), report, data.decision, data.riskLevel);
     setMetricColor($("profit"), data.profit);
-    setMetricColor($("margin"), data.margin);
-    setMetricColor($("roi"), roi);
-
-    renderInsights(data.insights);
-  }
-
-  /* ================= INSIGHTS RENDERING ================= */
-  function renderInsights(insights) {
-    const container = $("stepsContainer");
-    if (!container || !insights) return;
-
-    const titles = {
-      summary: "📊 Summary",
-      profitability: "💰 Profitability",
-      costs: "📉 Costs",
-      operations: "⚙ Operations",
-      growth: "🚀 Growth"
-    };
-
-    container.innerHTML = Object.entries(insights)
-      .map(([key, items]) => {
-        const content = items.map(i => `
-          <div class="step">
-            <strong>${i.title}</strong>
-            <div>${i.message}</div>
-          </div>
-        `).join("");
-
-        return `
-          <div class="insight-group">
-            <details>
-              <summary>${titles[key] || key}</summary>
-              <div style="margin-top:10px;">${content}</div>
-            </details>
-          </div>
-        `;
-      }).join("");
+    setMetricColor($("margin"), report.margin);
+    setMetricColor($("roi"), report.roi);
   }
 
   /* ================= ACTIONS ================= */
@@ -171,7 +127,6 @@
     $("status").textContent = "—";
     $("status").className = "";
     $("decisionAdvice").textContent = "";
-    $("stepsContainer").innerHTML = "";
   }
 
   async function saveDeal() {

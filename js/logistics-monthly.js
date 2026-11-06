@@ -11,12 +11,12 @@ async function runMonthly() {
     if (!elShipments) return;
 
     const inputs = {
-        shipments: parseFloat(elShipments.value) || 0,
-        revenuePer: parseFloat($("log-revenue")?.value) || 0,
-        fuel: parseFloat($("log-fuel")?.value) || 0,
-        labor: parseFloat($("log-labor")?.value) || 0,
-        maintenance: parseFloat($("log-maintenance")?.value) || 0,
-        fixed: parseFloat($("log-fixed")?.value) || 0
+        shipments: FormattedNumberInput.getNumber(elShipments),
+        revenuePer: FormattedNumberInput.getNumber($("log-revenue")),
+        fuel: FormattedNumberInput.getNumber($("log-fuel")),
+        labor: FormattedNumberInput.getNumber($("log-labor")),
+        maintenance: FormattedNumberInput.getNumber($("log-maintenance")),
+        fixed: FormattedNumberInput.getNumber($("log-fixed"))
     };
 
     latestMonthlyInputs = null;

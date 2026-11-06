@@ -13,34 +13,34 @@ async function runShipment() {
     const inputs = {
 
         // Pricing
-        quote: parseFloat(elQuote.value) || 0,
-        minMargin: parseFloat($("ship-min-margin")?.value) || 0,
-        buffer: parseFloat($("ship-buffer")?.value) || 0,
+        quote: FormattedNumberInput.getNumber(elQuote),
+        minMargin: FormattedNumberInput.getNumber($("ship-min-margin")),
+        buffer: FormattedNumberInput.getNumber($("ship-buffer")),
 
         // Distance
-        distance: parseFloat($("ship-distance")?.value) || 0,
-        fuelPerKm: parseFloat($("ship-fuel-km")?.value) || 0,
-        vehiclePerKm: parseFloat($("ship-vehicle-km")?.value) || 0,
-        loadFactor: parseFloat($("ship-load-factor")?.value) || 0,
+        distance: FormattedNumberInput.getNumber($("ship-distance")),
+        fuelPerKm: FormattedNumberInput.getNumber($("ship-fuel-km")),
+        vehiclePerKm: FormattedNumberInput.getNumber($("ship-vehicle-km")),
+        loadFactor: FormattedNumberInput.getNumber($("ship-load-factor")),
 
         // Driver
-        drivingHours: parseFloat($("ship-driving-hours")?.value) || 0,
-        waitingHours: parseFloat($("ship-wait-hours")?.value) || 0,
-        driverRate: parseFloat($("ship-driver-rate")?.value) || 0,
+        drivingHours: FormattedNumberInput.getNumber($("ship-driving-hours")),
+        waitingHours: FormattedNumberInput.getNumber($("ship-wait-hours")),
+        driverRate: FormattedNumberInput.getNumber($("ship-driver-rate")),
 
         // Route Costs
-        tolls: parseFloat($("ship-tolls")?.value) || 0,
-        permits: parseFloat($("ship-permits")?.value) || 0,
-        otherFees: parseFloat($("ship-other-fees")?.value) || 0,
+        tolls: FormattedNumberInput.getNumber($("ship-tolls")),
+        permits: FormattedNumberInput.getNumber($("ship-permits")),
+        otherFees: FormattedNumberInput.getNumber($("ship-other-fees")),
 
         // Cargo
-        cargoValue: parseFloat($("ship-cargo-value")?.value) || 0,
-        insuranceRate: parseFloat($("ship-insurance")?.value) || 0,
+        cargoValue: FormattedNumberInput.getNumber($("ship-cargo-value")),
+        insuranceRate: FormattedNumberInput.getNumber($("ship-insurance")),
 
         // Additional Charges
-        duties: parseFloat($("ship-duties")?.value) || 0,
-        handling: parseFloat($("ship-handling")?.value) || 0,
-        passThrough: parseFloat($("ship-pass-through")?.value) || 0
+        duties: FormattedNumberInput.getNumber($("ship-duties")),
+        handling: FormattedNumberInput.getNumber($("ship-handling")),
+        passThrough: FormattedNumberInput.getNumber($("ship-pass-through"))
     };
 
     latestShipmentInputs = null;
