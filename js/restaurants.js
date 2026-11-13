@@ -31,6 +31,142 @@
     return n.toFixed(2) + "%";
   };
 
+  function renderDecisionInsights(options) {
+    const number = value => {
+      const result = Number(value);
+      return Number.isFinite(result) ? result : 0;
+    };
+    const revenue = Math.max(0, number(options.revenue));
+    const costs = Math.max(0, number(options.costs));
+    const profit = Number.isFinite(Number(options.profit))
+      ? number(options.profit)
+      : revenue - costs;
+    const hasRevenue = revenue > 0;
+    const hasCosts = costs > 0;
+    const margin = hasRevenue ? Math.max(-100, Math.min(100, profit / revenue * 100)) : null;
+    const roi = hasCosts ? Math.max(-1000, Math.min(1000, profit / costs * 100)) : null;
+    const lines = [];
+    let recommendation;
+    let level;
+
+    if (!hasRevenue && !hasCosts) {
+      recommendation = "INSUFFICIENT DATA — ENTER REVENUE AND COSTS";
+      level = "caution";
+      lines.push("Enter positive revenue and cost assumptions to generate a reliable profitability decision.");
+    } else {
+      lines.push(
+        `Total costs are R${money(costs)} against monthly revenue of R${money(revenue)}. ` +
+        (profit >= 0
+          ? `Projected net profit is R${money(profit)}.`
+          : `Projected net loss is R${money(profit)}.`)
+      );
+      lines.push(margin === null
+        ? "Net margin is unavailable because revenue is zero; enter revenue before relying on percentage benchmarks."
+        : `Projected net margin is ${margin.toFixed(1)}%. Restaurants typically target 15-20% net profit margin; food/beverage COGS should be 28-35% of revenue and labor 25-35%.`);
+      lines.push(roi === null
+        ? "ROI is unavailable because total costs are zero."
+        : `Projected ROI on total costs is ${roi.toFixed(1)}%.`);
+
+      if (profit < 0) {
+        recommendation = "CRITICAL LOSS — DO NOT ACCEPT AT THIS PRICE";
+        level = "danger";
+      } else if (profit === 0) {
+        recommendation = "NO PROFIT BUFFER — RENEGOTIATE BEFORE PROCEEDING";
+        level = "caution";
+      } else if (margin === null || margin < 10) {
+        recommendation = "HIGH RISK — RENEGOTIATE PRICING OR REDUCE COSTS";
+        level = "danger";
+      } else if (margin < 15) {
+        recommendation = "PROCEED WITH CAUTION — IMPROVE THE PROFIT BUFFER";
+        level = "caution";
+      } else if (margin < 20) {
+        recommendation = "ON TARGET — PROCEED AND MONITOR COSTS";
+        level = "success";
+      } else {
+        recommendation = "STRONG PROJECT — GOOD TO PROCEED";
+        level = "success";
+      }
+    }
+
+    if (hasRevenue || hasCosts) {
+      const foodCost = Math.max(0, number(options.foodCost));
+      const laborCost = Math.max(0, number(options.laborCost));
+      const foodPct = hasRevenue ? foodCost / revenue * 100 : null;
+      const laborPct = hasRevenue ? laborCost / revenue * 100 : null;
+      const combinedPct = foodPct === null || laborPct === null ? null : foodPct + laborPct;
+      const ratioText = value => value === null
+        ? "unavailable"
+        : `${Math.max(-100, Math.min(100, value)).toFixed(1)}%`;
+      const costRisk = (foodPct !== null && foodPct > 35) ||
+        (laborPct !== null && laborPct > 35) ||
+        (combinedPct !== null && combinedPct > 65);
+
+      lines.push(
+        `Food/beverage COGS are ${ratioText(foodPct)} of revenue ` +
+        `(${foodPct === null ? "benchmark unavailable" : foodPct < 28 ? "below" : foodPct <= 35 ? "within" : "above"} the typical 28-35% range); ` +
+        `labor is ${ratioText(laborPct)} ` +
+        `(${laborPct === null ? "benchmark unavailable" : laborPct < 25 ? "below" : laborPct <= 35 ? "within" : "above"} the typical 25-35% range).`
+      );
+      lines.push(`Combined food/beverage and labor are ${ratioText(combinedPct)} of revenue, against a typical 55-65% combined range.`);
+      if (costRisk && level !== "danger") {
+        recommendation = "REVIEW COST MIX — REDUCE ABOVE-BENCHMARK FOOD OR LABOR COSTS";
+        level = "caution";
+      }
+    }
+
+    lines.unshift(recommendation);
+    const decision = typeof options.decision === "string"
+      ? options.decision
+      : options.decision?.status || options.decision?.advice || "";
+    const rawDecision = String(decision).toLowerCase();
+    const risk = String(options.riskLevel || options.decision?.riskLevel || "").toLowerCase();
+    const rejected = rawDecision.includes("reject") || rawDecision.includes("loss") || profit < 0;
+    const approved = rawDecision.includes("approve") || rawDecision.includes("strong");
+    let tone;
+    let label;
+    if (rejected) {
+      tone = "danger";
+      label = "✖ Unviable Margin";
+    } else if (risk === "high" || (!approved && (risk === "medium" || rawDecision.includes("review")))) {
+      tone = "caution";
+      label = "⚠ High Risk";
+    } else if (approved || risk === "low") {
+      tone = "success";
+      label = "✔ Viable Deal";
+    } else if (level === "danger") {
+      tone = "danger";
+      label = "✖ Unviable Margin";
+    } else if (level === "success") {
+      tone = "success";
+      label = "✔ Viable Deal";
+    } else {
+      tone = "caution";
+      label = "⚠ Review Required";
+    }
+
+    const advice = options.advice || options.decision?.advice;
+    if (advice) lines.push(`Calculator guidance: ${advice}`);
+
+    if (options.status) {
+      options.status.textContent = label;
+      options.status.className = tone === "danger" ? "loss" : tone === "caution" ? "neutral" : "profit";
+    }
+    if (options.container) {
+      const narrative = document.createElement("section");
+      narrative.className = `decision-insights decision-insights-${level}`;
+      const heading = document.createElement("strong");
+      heading.textContent = "Decision Insights";
+      narrative.appendChild(heading);
+      lines.forEach(text => {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = text;
+        narrative.appendChild(paragraph);
+      });
+      options.container.replaceChildren(narrative);
+    }
+    return { margin, roi };
+  }
+
   /* ================= API UTILITY ================= */
   async function api(url, method = "GET", body = null) {
     const token = localStorage.getItem("token");
@@ -79,11 +215,15 @@
     const data = await api("/api/calculators/restaurant/operations", "POST", inputs);
     if (!data) return;
 
-    const report = DecisionInsights.analyze({
-      industry: "restaurant",
+    const report = renderDecisionInsights({
+      status: $("status"),
+      container: $("decisionAdvice"),
       revenue: data.monthlyRevenue,
       costs: data.totalCosts,
       profit: data.profit,
+      decision: data.decision,
+      advice: data.advice,
+      riskLevel: data.riskLevel,
       foodCost: data.foodCost,
       laborCost: inputs.labor
     });
@@ -104,7 +244,6 @@
     $("annual").textContent = money(data.annualProfit);
     $("ratio").textContent = percent(data.costRatio);
 
-    DecisionInsights.render($("decisionAdvice"), $("status"), report, data.decision, data.riskLevel);
     setMetricColor($("profit"), data.profit);
     setMetricColor($("margin"), report.margin);
     setMetricColor($("roi"), report.roi);

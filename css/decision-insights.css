@@ -1,0 +1,53 @@
+.decision-insights {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-left: 4px solid #38bdf8;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #e2e8f0;
+  line-height: 1.6;
+}
+
+.decision-insights > strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #f8fafc;
+}
+
+.decision-insights p {
+  margin: 6px 0 0;
+}
+
+.decision-insights-status {
+  margin-top: 8px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.decision-insights-status.decision-insights-success {
+  color: #22c55e;
+}
+
+.decision-insights-status.decision-insights-danger {
+  color: #ef4444;
+}
+
+.decision-insights-status.decision-insights-caution {
+  color: #f59e0b;
+}
+
+.decision-insights-success,
+.decision-insights-status.decision-insights-success {
+  border-left-color: #22c55e;
+}
+
+.decision-insights-danger,
+.decision-insights-status.decision-insights-danger {
+  border-left-color: #ef4444;
+}
+
+.decision-insights-caution,
+.decision-insights-status.decision-insights-caution {
+  border-left-color: #f59e0b;
+}

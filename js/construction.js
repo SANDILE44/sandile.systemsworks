@@ -28,6 +28,113 @@
 
     return n.toFixed(2) + "%";
   };
+
+  function renderDecisionInsights(options) {
+    const number = value => {
+      const result = Number(value);
+      return Number.isFinite(result) ? result : 0;
+    };
+    const revenue = Math.max(0, number(options.revenue));
+    const costs = Math.max(0, number(options.costs));
+    const profit = Number.isFinite(Number(options.profit))
+      ? number(options.profit)
+      : revenue - costs;
+    const hasRevenue = revenue > 0;
+    const hasCosts = costs > 0;
+    const margin = hasRevenue ? Math.max(-100, Math.min(100, profit / revenue * 100)) : null;
+    const roi = hasCosts ? Math.max(-1000, Math.min(1000, profit / costs * 100)) : null;
+    const lines = [];
+    let recommendation;
+    let level;
+
+    if (!hasRevenue && !hasCosts) {
+      recommendation = "INSUFFICIENT DATA — ENTER REVENUE AND COSTS";
+      level = "caution";
+      lines.push("Enter positive revenue and cost assumptions to generate a reliable profitability decision.");
+    } else {
+      lines.push(
+        `Total costs are R${money(costs)} against contract value of R${money(revenue)}. ` +
+        (profit >= 0
+          ? `Projected net profit is R${money(profit)}.`
+          : `Projected net loss is R${money(profit)}.`)
+      );
+      lines.push(margin === null
+        ? "Net margin is unavailable because revenue is zero; enter revenue before relying on percentage benchmarks."
+        : `Projected net margin is ${margin.toFixed(1)}%. Construction projects should target at least 12-15% net margin to absorb overruns; margins below 12% are high risk.`);
+      lines.push(roi === null
+        ? "ROI is unavailable because total costs are zero."
+        : `Projected ROI on total costs is ${roi.toFixed(1)}%.`);
+
+      if (profit < 0) {
+        recommendation = "CRITICAL LOSS — DO NOT ACCEPT AT THIS PRICE";
+        level = "danger";
+      } else if (profit === 0) {
+        recommendation = "NO PROFIT BUFFER — RENEGOTIATE BEFORE PROCEEDING";
+        level = "caution";
+      } else if (margin === null || margin < 12) {
+        recommendation = "HIGH RISK — RENEGOTIATE PRICING OR REDUCE COSTS";
+        level = "danger";
+      } else if (margin < 15) {
+        recommendation = "PROCEED WITH CAUTION — IMPROVE THE PROFIT BUFFER";
+        level = "caution";
+      } else {
+        recommendation = "STRONG PROJECT — GOOD TO PROCEED";
+        level = "success";
+      }
+    }
+
+    lines.unshift(recommendation);
+    const decision = typeof options.decision === "string"
+      ? options.decision
+      : options.decision?.status || options.decision?.advice || "";
+    const rawDecision = String(decision).toLowerCase();
+    const risk = String(options.riskLevel || options.decision?.riskLevel || "").toLowerCase();
+    const rejected = rawDecision.includes("reject") || rawDecision.includes("loss") || profit < 0;
+    const approved = rawDecision.includes("approve") || rawDecision.includes("strong");
+    let tone;
+    let label;
+    if (rejected) {
+      tone = "danger";
+      label = "✖ Unviable Margin";
+    } else if (risk === "high" || (!approved && (risk === "medium" || rawDecision.includes("review")))) {
+      tone = "caution";
+      label = "⚠ High Risk";
+    } else if (approved || risk === "low") {
+      tone = "success";
+      label = "✔ Viable Deal";
+    } else if (level === "danger") {
+      tone = "danger";
+      label = "✖ Unviable Margin";
+    } else if (level === "success") {
+      tone = "success";
+      label = "✔ Viable Deal";
+    } else {
+      tone = "caution";
+      label = "⚠ Review Required";
+    }
+
+    const advice = options.advice || options.decision?.advice;
+    if (advice) lines.push(`Calculator guidance: ${advice}`);
+
+    if (options.status) {
+      options.status.textContent = label;
+      options.status.className = tone === "danger" ? "negative" : tone === "caution" ? "caution" : "positive";
+    }
+    if (options.container) {
+      const narrative = document.createElement("section");
+      narrative.className = `decision-insights decision-insights-${level}`;
+      const heading = document.createElement("strong");
+      heading.textContent = "Decision Insights";
+      narrative.appendChild(heading);
+      lines.forEach(text => {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = text;
+        narrative.appendChild(paragraph);
+      });
+      options.container.replaceChildren(narrative);
+    }
+    return { margin, roi };
+  }
   
   /* ================= INPUTS ================= */
   function getInputs() {
@@ -124,11 +231,15 @@
       if (!res.ok) return;
 
       const d = await res.json();
-      const report = DecisionInsights.analyze({
-        industry: "construction",
+      const report = renderDecisionInsights({
+        status: $("decision-status"),
+        container: $("decision-advice"),
         revenue: d.value ?? d.revenue ?? inputs.value,
         costs: d.totalCosts,
-        profit: d.profit
+        profit: d.profit,
+        decision: d.decision,
+        advice: d.advice,
+        riskLevel: d.riskLevel
       });
       latestData = d;
       latestInputs = { ...inputs };
@@ -155,7 +266,6 @@
       applyMetricColoring($("const-annual-profit"), d.annualProfit, d.riskLevel, false);
 
       // 3. Inject Decision Status
-      DecisionInsights.render($("decision-advice"), $("decision-status"), report, d.decision, d.riskLevel);
       renderInsights(d.insights || {});
 
     } catch (err) {
