@@ -1,11 +1,19 @@
 (() => {
-
   const $ = (id) => document.getElementById(id);
   const API_BASE = "https://sandile-systemsworks-saas-backend-2.onrender.com";
 
   let debounceTimer;
   let latestData = null;
   let latestInputs = null;
+
+  function safeJsonParse(raw, fallback = null) {
+    if (!raw) return fallback;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return fallback;
+    }
+  }
 
   function getProjectName() {
     return $("consult-project-name")?.value.trim() || "Consulting project";
@@ -15,9 +23,13 @@
     if (!element) return;
     element.classList.remove("positive", "negative", "caution");
     const number = Number(value);
-    element.classList.add(!Number.isFinite(number) || number === 0
-      ? "caution"
-      : number > 0 ? "positive" : "negative");
+    element.classList.add(
+      !Number.isFinite(number) || number === 0
+        ? "caution"
+        : number > 0
+          ? "positive"
+          : "negative"
+    );
   }
 
   /* ================= FORMATTERS ================= */
@@ -27,11 +39,10 @@
       maximumFractionDigits: 2
     });
 
-  const percent = (v) =>
-    (Number(v) || 0).toFixed(2) + "%";
+  const percent = (v) => (Number(v) || 0).toFixed(2) + "%";
 
   function renderDecisionInsights(options) {
-    const number = value => {
+    const number = (value) => {
       const result = Number(value);
       return Number.isFinite(result) ? result : 0;
     };
@@ -42,8 +53,12 @@
       : revenue - costs;
     const hasRevenue = revenue > 0;
     const hasCosts = costs > 0;
-    const margin = hasRevenue ? Math.max(-100, Math.min(100, profit / revenue * 100)) : null;
-    const roi = hasCosts ? Math.max(-1000, Math.min(1000, profit / costs * 100)) : null;
+    const margin = hasRevenue
+      ? Math.max(-100, Math.min(100, (profit / revenue) * 100))
+      : null;
+    const roi = hasCosts
+      ? Math.max(-1000, Math.min(1000, (profit / costs) * 100))
+      : null;
     const lines = [];
     let recommendation;
     let level;
@@ -51,20 +66,26 @@
     if (!hasRevenue && !hasCosts) {
       recommendation = "INSUFFICIENT DATA — ENTER REVENUE AND COSTS";
       level = "caution";
-      lines.push("Enter positive revenue and cost assumptions to generate a reliable profitability decision.");
+      lines.push(
+        "Enter positive revenue and cost assumptions to generate a reliable profitability decision."
+      );
     } else {
       lines.push(
         `Total costs are R${money(costs)} against discounted project revenue of R${money(revenue)}. ` +
-        (profit >= 0
-          ? `Projected net profit is R${money(profit)}.`
-          : `Projected net loss is R${money(profit)}.`)
+          (profit >= 0
+            ? `Projected net profit is R${money(profit)}.`
+            : `Projected net loss is R${money(profit)}.`)
       );
-      lines.push(margin === null
-        ? "Net margin is unavailable because revenue is zero; enter revenue before relying on percentage benchmarks."
-        : `Projected net margin is ${margin.toFixed(1)}%. Consulting projects should generally target 40-50% or higher net margins to account for delivery risk and overhead.`);
-      lines.push(roi === null
-        ? "ROI is unavailable because total costs are zero."
-        : `Projected ROI on total costs is ${roi.toFixed(1)}%.`);
+      lines.push(
+        margin === null
+          ? "Net margin is unavailable because revenue is zero; enter revenue before relying on percentage benchmarks."
+          : `Projected net margin is ${margin.toFixed(1)}%. Consulting projects should generally target 40-50% or higher net margins to account for delivery risk and overhead.`
+      );
+      lines.push(
+        roi === null
+          ? "ROI is unavailable because total costs are zero."
+          : `Projected ROI on total costs is ${roi.toFixed(1)}%.`
+      );
 
       if (profit < 0) {
         recommendation = "CRITICAL LOSS — DO NOT ACCEPT AT THIS PRICE";
@@ -85,19 +106,28 @@
     }
 
     lines.unshift(recommendation);
-    const decision = typeof options.decision === "string"
-      ? options.decision
-      : options.decision?.status || options.decision?.advice || "";
+    const decision =
+      typeof options.decision === "string"
+        ? options.decision
+        : options.decision?.status || options.decision?.advice || "";
     const rawDecision = String(decision).toLowerCase();
-    const risk = String(options.riskLevel || options.decision?.riskLevel || "").toLowerCase();
-    const rejected = rawDecision.includes("reject") || rawDecision.includes("loss") || profit < 0;
-    const approved = rawDecision.includes("approve") || rawDecision.includes("strong");
+    const risk = String(
+      options.riskLevel || options.decision?.riskLevel || ""
+    ).toLowerCase();
+    const rejected =
+      rawDecision.includes("reject") || rawDecision.includes("loss") || profit < 0;
+    const approved =
+      rawDecision.includes("approve") || rawDecision.includes("strong");
+
     let tone;
     let label;
     if (rejected) {
       tone = "danger";
       label = "✖ Unviable Margin";
-    } else if (risk === "high" || (!approved && (risk === "medium" || rawDecision.includes("review")))) {
+    } else if (
+      risk === "high" ||
+      (!approved && (risk === "medium" || rawDecision.includes("review")))
+    ) {
       tone = "caution";
       label = "⚠ High Risk";
     } else if (approved || risk === "low") {
@@ -119,7 +149,8 @@
 
     if (options.status) {
       options.status.textContent = label;
-      options.status.className = tone === "danger" ? "loss" : tone === "caution" ? "neutral" : "profit";
+      options.status.className =
+        tone === "danger" ? "loss" : tone === "caution" ? "neutral" : "profit";
     }
     if (options.container) {
       const narrative = document.createElement("section");
@@ -127,7 +158,7 @@
       const heading = document.createElement("strong");
       heading.textContent = "Decision Insights";
       narrative.appendChild(heading);
-      lines.forEach(text => {
+      lines.forEach((text) => {
         const paragraph = document.createElement("p");
         paragraph.textContent = text;
         narrative.appendChild(paragraph);
@@ -163,7 +194,7 @@
         method,
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
         body: body ? JSON.stringify(body) : null
       });
@@ -215,12 +246,12 @@
 
     $("consult-profit").textContent = money(data.profit);
     $("consult-profit-hour").textContent = money(data.profitPerHour);
-    $("consult-margin").textContent = report.margin === null ? "—" : percent(report.margin);
+    $("consult-margin").textContent =
+      report.margin === null ? "—" : percent(report.margin);
     $("consult-roi").textContent = report.roi === null ? "—" : percent(report.roi);
 
     $("consult-breakeven").textContent = (data.breakevenHours || 0).toFixed(2);
 
-    /* ================= STATUS ================= */
     /* ================= COLORS ================= */
     setMetricColor($("consult-profit"), data.profit);
     setMetricColor($("consult-margin"), report.margin);
@@ -234,13 +265,21 @@
     const i = getInputs();
     const rows = [
       ["Field", "Value"],
+      ["Project", getProjectName()],
       ["Total Hours", i.hours],
       ["Hourly Rate", i.rate],
+      ["Overtime Hours", i.otHours],
+      ["Overtime Rate", i.otRate],
       ["Expenses", i.expenses],
       ["Labor", i.labor],
       ["Fixed", i.fixed],
+      ["Variable Costs", i.variableCosts],
       ["Discount %", i.discountPct],
+      ["Contingency %", i.contingencyPct],
       ["Total Revenue", latestData.totalRevenue],
+      ["Revenue After Discount", latestData.revenueAfterDiscount],
+      ["Overtime Revenue", latestData.overtimeRevenue],
+      ["Contingency Amount", latestData.contingencyAmount],
       ["Total Costs", latestData.totalCosts],
       ["Net Profit", latestData.profit],
       ["Margin %", latestData.margin],
@@ -248,7 +287,7 @@
       ["Decision", latestData.decision]
     ];
 
-    const csvContent = rows.map(r => r.join(",")).join("\n");
+    const csvContent = rows.map((r) => r.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -263,10 +302,10 @@
     if (!latestData) return alert("Run calculator first");
 
     const projectName = getProjectName();
-    const dateStr = new Date().toLocaleDateString('en-ZA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const dateStr = new Date().toLocaleDateString("en-ZA", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
     });
 
     try {
@@ -290,10 +329,14 @@
           rows: [
             ["Total hours", i.hours],
             ["Hourly rate", money(i.rate)],
+            ["Overtime hours", i.otHours],
+            ["Overtime rate", money(i.otRate)],
             ["Project expenses", money(i.expenses)],
             ["Labor cost", money(i.labor)],
             ["Fixed costs", money(i.fixed)],
-            ["Discount", percent(i.discountPct)]
+            ["Variable costs", money(i.variableCosts)],
+            ["Discount", percent(i.discountPct)],
+            ["Contingency", percent(i.contingencyPct)]
           ]
         },
         {
@@ -318,18 +361,17 @@
     });
   }
 
-/* ================= SHARE DEAL (VERCEL ROOT) ================= */
+  /* ================= SHARE DEAL (VERCEL ROOT) ================= */
   async function shareDeal() {
     if (!latestData) return alert("Run calculator first");
 
     const token = localStorage.getItem("token");
     const projectName = getProjectName();
-    
-    // 1. Construct the payload to match the backend SharedDealSchema
+
     const payload = {
-      shareId: "share_" + Math.random().toString(36).substring(2, 9), 
+      shareId: "share_" + Math.random().toString(36).substring(2, 9),
       type: "consulting",
-      inputs: getInputs(), 
+      inputs: getInputs(),
       results: {
         profit: latestData.profit,
         margin: latestData.margin,
@@ -357,7 +399,7 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
@@ -370,28 +412,25 @@
 
       const data = await res.json();
       const finalId = data.shareId || data.id || data._id;
-
-      // 2. Clean root URL generation for Vercel 
       const shareUrl = `${window.location.origin}/share.html?id=${finalId}`;
 
-      const shareMessage = 
+      const shareMessage =
         `💼 Consulting Project Analysis: ${projectName}\n` +
         `View full analysis results here:\n${shareUrl}\n\n` +
         `Generated by Sandile SystemsWorks`;
 
       if (navigator.share) {
         await navigator.share({
-          title: 'Consulting Analysis Report',
+          title: "Consulting Analysis Report",
           text: shareMessage,
-          url: shareUrl 
+          url: shareUrl
         });
       } else {
         await navigator.clipboard.writeText(shareMessage);
         alert("Analysis link and summary copied to clipboard!");
       }
-
     } catch (err) {
-      console.error('Sharing Error:', err);
+      console.error("Sharing Error:", err);
       alert("Action failed. Please check the console for details.");
     }
   }
@@ -441,20 +480,30 @@
 
   /* ================= RESET ================= */
   function resetAll() {
-    document.querySelectorAll(".input-section input").forEach(i => i.value = "");
+    document.querySelectorAll(".input-section input").forEach((i) => {
+      i.value = "";
+      i.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    clearTimeout(debounceTimer);
     latestData = null;
     latestInputs = null;
     $("status").textContent = "—";
     $("status").className = "";
     $("decisionAdvice").textContent = "";
-    
+
     [
-      "consult-revenue","consult-revenue-after-discount",
-      "consult-overtime-output","consult-contingency-output",
-      "consult-cost-hour","consult-costs",
-      "consult-profit","consult-profit-hour",
-      "consult-margin","consult-roi","consult-breakeven"
-    ].forEach(id => {
+      "consult-revenue",
+      "consult-revenue-after-discount",
+      "consult-overtime-output",
+      "consult-contingency-output",
+      "consult-cost-hour",
+      "consult-costs",
+      "consult-profit",
+      "consult-profit-hour",
+      "consult-margin",
+      "consult-roi",
+      "consult-breakeven"
+    ].forEach((id) => {
       const element = $(id);
       if (!element) return;
       element.textContent = "—";
@@ -464,11 +513,14 @@
 
   /* ================= INIT ================= */
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".input-section input:not(#consult-project-name)")
-      .forEach(i => i.addEventListener("input", () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(runConsulting, 300);
-      }));
+    document
+      .querySelectorAll(".input-section input:not(#consult-project-name)")
+      .forEach((i) =>
+        i.addEventListener("input", () => {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(runConsulting, 300);
+        })
+      );
 
     window.ButtonLoading.bind($("resetBtn"), resetAll);
     window.ButtonLoading.bind($("saveDealBtn"), saveDeal);
@@ -477,12 +529,12 @@
     window.ButtonLoading.bind($("shareBtn"), shareDeal);
     window.ButtonLoading.bind($("compareBtn"), addToCompare);
 
-    // Handle Edit Mode
     const compareScenario = window.DealCompare?.getEditingScenario("consulting");
-    const editDeal = JSON.parse(localStorage.getItem("editDeal"));
+    const editDeal = safeJsonParse(localStorage.getItem("editDeal"));
+
     if (compareScenario) {
       const i = compareScenario.inputs || {};
-      $("consult-project-name").value = compareScenario.name || "";
+      $("consult-project-name").value = compareScenario.name ?? "";
       $("consult-hours").value = i.hours ?? "";
       $("consult-rate").value = i.rate ?? "";
       $("consult-expenses").value = i.expenses ?? "";
@@ -497,21 +549,20 @@
       runConsulting();
     } else if (editDeal && editDeal.type === "consulting") {
       const i = editDeal.inputs || {};
-      $("consult-project-name").value = editDeal.clientName || editDeal.name || "";
-      $("consult-hours").value = i.hours || "";
-      $("consult-rate").value = i.rate || "";
-      $("consult-expenses").value = i.expenses || "";
-      $("consult-labor").value = i.labor || "";
-      $("consult-fixed").value = i.fixed || "";
-      $("consult-discount").value = i.discountPct || "";
-      $("consult-overtime-hours").value = i.otHours || "";
-      $("consult-overtime-rate").value = i.otRate || "";
-      $("consult-variable-costs").value = i.variableCosts || "";
-      $("consult-contingency").value = i.contingencyPct || "";
+      $("consult-project-name").value = editDeal.clientName ?? editDeal.name ?? "";
+      $("consult-hours").value = i.hours ?? "";
+      $("consult-rate").value = i.rate ?? "";
+      $("consult-expenses").value = i.expenses ?? "";
+      $("consult-labor").value = i.labor ?? "";
+      $("consult-fixed").value = i.fixed ?? "";
+      $("consult-discount").value = i.discountPct ?? "";
+      $("consult-overtime-hours").value = i.otHours ?? "";
+      $("consult-overtime-rate").value = i.otRate ?? "";
+      $("consult-variable-costs").value = i.variableCosts ?? "";
+      $("consult-contingency").value = i.contingencyPct ?? "";
       runConsulting();
     } else {
       runConsulting();
     }
   });
-
 })();
